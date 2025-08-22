@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public interface IServerPlayer
+public interface IServerPlayer extends IAudienceMember
 {
     Player GetUnderlyingPlayer();
     UUID GetUUID();

@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IAudienceMemberHolder extends IAudienceMember
 {
-    List<IAudienceMember> GetAudienceMembers();
+    List<? extends IAudienceMember> GetAudienceMembers();
 }

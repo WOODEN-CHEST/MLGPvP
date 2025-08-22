@@ -1,20 +1,21 @@
 package sus.keiger.mlgpvp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import sus.keiger.plugincommon.player.IBasicAudience;
+import sus.keiger.plugincommon.PCString;
 
 import java.util.Locale;
 
 public class MLGPvPPlugin extends JavaPlugin
 {
     // Private fields.
-
+    private final ServerContext _context;
 
 
     // Constructors.
     public MLGPvPPlugin()
     {
-
+        _context = new ServerContext(this);
     }
 
 
@@ -35,11 +36,32 @@ public class MLGPvPPlugin extends JavaPlugin
     public void onEnable()
     {
         super.onEnable();
+
+        try
+        {
+            _context.Initialize();
+        }
+        catch (ServerContextException e)
+        {
+            getLogger().severe("Failed to initialize MLGPvP Plugin: %s"
+                    .formatted(PCString.ExceptionToString(e)));
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
     }
 
     @Override
     public void onDisable()
     {
         super.onDisable();
+
+        try
+        {
+            _context.Deinitialize();
+        }
+        catch (ServerContextException e)
+        {
+            getLogger().severe("Failed to deinitialize MLGPvP Plugin: %s"
+                    .formatted(PCString.ExceptionToString(e)));
+        }
     }
 }
