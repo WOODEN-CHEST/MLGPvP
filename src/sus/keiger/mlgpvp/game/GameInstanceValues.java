@@ -1,6 +1,11 @@
 package sus.keiger.mlgpvp.game;
 
-import sus.keiger.plugincommon.PCMath;
+import sus.keiger.plugincommon.PCString;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class GameInstanceValues
 {
@@ -72,4 +77,84 @@ public class GameInstanceValues
 
 
     // Methods.
+    public List<Field> GetModifiableFields()
+    {
+        return Arrays.stream(getClass().getFields())
+                .filter(this::IsModifiableField)
+                .toList();
+    }
+
+    public boolean IsModifiableField(Field field)
+    {
+        return (field.getAnnotation(GameBoolField.class) != null)
+                || (field.getAnnotation(GameIntField.class) != null )
+                || (field.getAnnotation(GameDoubleField.class) != null)
+                || (field.getAnnotation(GameStringField.class) != null);
+    }
+
+    public void CopyValuesFrom(GameInstanceValues source)
+    {
+        Objects.requireNonNull(source, "source is null");
+        for (Field TargetField : GetModifiableFields())
+        {
+            try
+            {
+                TargetField.set(this, TargetField.get(source));
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new GameValuesException("Failed to copy values from source: %s"
+                        .formatted(PCString.ExceptionToString(e)));
+            }
+        }
+    }
+
+    public void Reset()
+    {
+        CopyValuesFrom(new GameInstanceValues());
+    }
+
+    public GameFieldProperties GetProperties(Field field)
+    {
+        Objects.requireNonNull(field, "field is null");
+
+        try
+        {
+            GameBoolField BoolField = field.getAnnotation(GameBoolField.class);
+            if (BoolField != null)
+            {
+                return new GameFieldProperties(field.get(this).toString(), null, null, BoolField.Description());
+            }
+
+            GameIntField IntField = field.getAnnotation(GameIntField.class);
+            if (IntField != null)
+            {
+                return new GameFieldProperties(field.get(this).toString(),
+                        Integer.toString(IntField.MinValue()),
+                        Integer.toString(IntField.MaxValue()),
+                        IntField.Description());
+            }
+
+            GameDoubleField DoubleField = field.getAnnotation(GameDoubleField.class);
+            if (DoubleField != null)
+            {
+                return new GameFieldProperties(field.get(this).toString(),
+                        Double.toString(DoubleField.MinValue()),
+                        Double.toString(DoubleField.MaxValue()),
+                        DoubleField.Description());
+            }
+
+            GameStringField StringField = field.getAnnotation(GameStringField.class);
+            if (StringField != null)
+            {
+                return new GameFieldProperties(field.get(this).toString(), null, null, StringField.Description());
+            }
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new GameValuesException("Failed to get field properties: %s"
+                    .formatted(PCString.ExceptionToString(e)));
+        }
+        throw new GameValuesException("Invalid field \"%s\"".formatted(field.toString()));
+    }
 }
