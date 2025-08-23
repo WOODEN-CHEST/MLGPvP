@@ -2,7 +2,7 @@ package sus.keiger.mlgpvp.game;
 
 public @interface GameDoubleField
 {
-    String Name();
+    String Description();
     double MinValue();
     double MaxValue();
 }

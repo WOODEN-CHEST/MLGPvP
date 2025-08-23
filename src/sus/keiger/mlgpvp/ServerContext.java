@@ -22,7 +22,6 @@ public class ServerContext
     // Constructors.
     public ServerContext(Plugin plugin)
     {
-
         _plugin = Objects.requireNonNull(plugin, "plugin is null");
     }
 
