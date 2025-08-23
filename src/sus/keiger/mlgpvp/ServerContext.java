@@ -1,8 +1,10 @@
 package sus.keiger.mlgpvp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import sus.keiger.mlgpvp.player.PlayerExistenceController;
 import sus.keiger.mlgpvp.service.IServerServices;
-import sus.keiger.mlgpvp.service.ServiceInitializer;
+import sus.keiger.mlgpvp.service.ServiceCreator;
 import sus.keiger.plugincommon.PCString;
 
 import java.util.Objects;
@@ -14,6 +16,7 @@ public class ServerContext
 
     private boolean _isInitialized = false;
     private IServerServices _services;
+    private PlayerExistenceController _playerExistenceController;
 
 
     // Constructors.
@@ -34,7 +37,8 @@ public class ServerContext
 
         try
         {
-            _services = new ServiceInitializer().CreateServices(_plugin);
+            ConstructObjects();
+            InitializeObjects();
         }
         catch (Exception e)
         {
@@ -52,12 +56,30 @@ public class ServerContext
 
         try
         {
-
+            DeinitializeObjects();
         }
         catch (Exception e)
         {
             throw new ServerContextException("Failed to deinitialize server context: %s"
                     .formatted(PCString.ExceptionToString(e)));
         }
+    }
+
+
+    // Private methods.
+    private void ConstructObjects()
+    {
+        _services = new ServiceCreator().CreateServices(_plugin);
+        _playerExistenceController = new PlayerExistenceController(_services);
+    }
+
+    private void InitializeObjects()
+    {
+        _playerExistenceController.SubscribeToEvents(_services.GetEventDispatcher());
+    }
+
+    private void DeinitializeObjects()
+    {
+        _playerExistenceController.UnsubscribeFromEvents(_services.GetEventDispatcher());
     }
 }

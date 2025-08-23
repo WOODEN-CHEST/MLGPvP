@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.Player;
 import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
@@ -46,6 +47,18 @@ public class DefaultPlayerCollection implements IServerPlayerCollection
             UpdatePlayersCopy();
             _addEvent.FireEvent(new PlayerCollectionAddEvent(player));
         }
+    }
+
+    @Override
+    public Optional<IServerPlayer> GetPlayer(UUID playerUUID)
+    {
+        return Optional.ofNullable(_players.get(Objects.requireNonNull(playerUUID, "plyerUUID is null")));
+    }
+
+    @Override
+    public Optional<IServerPlayer> GetPlayer(Player player)
+    {
+        return Optional.ofNullable(_players.get(Objects.requireNonNull(player, "player is null").getUniqueId()));
     }
 
     @Override
