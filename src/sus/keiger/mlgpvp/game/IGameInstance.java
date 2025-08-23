@@ -1,10 +1,12 @@
 package sus.keiger.mlgpvp.game;
 
+import sus.keiger.mlgpvp.player.IAudienceMemberHolder;
 import sus.keiger.mlgpvp.player.IServerPlayer;
+import sus.keiger.plugincommon.ITickable;
 
 import java.util.List;
 
-public interface IGameInstance
+public interface IGameInstance extends IAudienceMemberHolder, ITickable
 {
     void AddPlayer(IServerPlayer player);
     void RemovePlayer(IServerPlayer player);
@@ -21,4 +23,9 @@ public interface IGameInstance
     List<IServerPlayer> GetJoinedSpectators();
 
     GameInstanceValues GetConfigValues();
+
+    void Start();
+    void End();
+
+    GameInstanceState GetState();
 }

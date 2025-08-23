@@ -76,15 +76,15 @@ public class GameInstanceValues
     public boolean ArrowsExplodeOnDirectImpact = false;
 
 
-    // Methods.
-    public List<Field> GetModifiableFields()
+    // Static methods.
+    public static List<Field> GetModifiableFields()
     {
-        return Arrays.stream(getClass().getFields())
-                .filter(this::IsModifiableField)
+        return Arrays.stream(GameInstanceValues.class.getFields())
+                .filter(GameInstanceValues::IsModifiableField)
                 .toList();
     }
 
-    public boolean IsModifiableField(Field field)
+    public static boolean IsModifiableField(Field field)
     {
         return (field.getAnnotation(GameBoolField.class) != null)
                 || (field.getAnnotation(GameIntField.class) != null )
@@ -92,6 +92,8 @@ public class GameInstanceValues
                 || (field.getAnnotation(GameStringField.class) != null);
     }
 
+
+    // Methods.
     public void CopyValuesFrom(GameInstanceValues source)
     {
         Objects.requireNonNull(source, "source is null");

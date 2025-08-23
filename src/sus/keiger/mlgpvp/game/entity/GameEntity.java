@@ -6,16 +6,16 @@ import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 
 import java.util.Objects;
 
-public class GameEntity<T extends Entity>
+public class GameEntity
 {
     // Private fields.
     private final IGameInstanceExtended _gameInstance;
-    private final T _wrappedEntity;
+    private final Entity _wrappedEntity;
 
 
 
     // Constructors.
-    public GameEntity(IGameInstanceExtended gameInstance, T wrappedEntity)
+    public GameEntity(IGameInstanceExtended gameInstance, Entity wrappedEntity)
     {
         _gameInstance = Objects.requireNonNull(gameInstance, "gameInstance is null");
         _wrappedEntity = Objects.requireNonNull(wrappedEntity, "wrappedEntity is null");
@@ -23,7 +23,7 @@ public class GameEntity<T extends Entity>
 
 
     // Methods.
-    public T GetUnderlyingEntity()
+    public Entity GetUnderlyingEntity()
     {
         return _wrappedEntity;
     }
