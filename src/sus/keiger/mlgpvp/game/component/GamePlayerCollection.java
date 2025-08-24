@@ -5,14 +5,13 @@ import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 
-import java.awt.color.ICC_ProfileGray;
 import java.util.*;
 
 public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
 {
     // Private fields.
     private final Map<IServerPlayer, GamePlayer> _players = new HashMap<>();
-    private List<IServerPlayer> _activePlayers = Collections.emptyList();
+    private List<IServerPlayer> _onlinePlayers = Collections.emptyList();
 
 
     // Constructors.
@@ -38,13 +37,13 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
             GetGameInstance().TryReAddPlayer(player);
         }
 
-        UpdateActivePlayerList();
+        UpdateOnlinePlayerList();
     }
 
     public void RemovePlayer(IServerPlayer player)
     {
         _players.remove(player);
-        UpdateActivePlayerList();
+        UpdateOnlinePlayerList();
     }
 
     public List<IServerPlayer> GetJoinedPlayers()
@@ -57,22 +56,22 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
         return _players.size();
     }
 
-    boolean ContainsJoinedPlayer(IServerPlayer player)
+    public boolean ContainsJoinedPlayer(IServerPlayer player)
     {
         return _players.containsKey(Objects.requireNonNull(player, "player is null"));
     }
 
-    public List<IServerPlayer> GetActivePlayers()
+    public List<IServerPlayer> GetOnlinePlayers()
     {
-        return _activePlayers;
+        return _onlinePlayers;
     }
 
-    public int GetActivePlayerCount()
+    public int GetOnlinePlayerCount()
     {
-        return _activePlayers.size();
+        return _onlinePlayers.size();
     }
 
-    public boolean ContainsActivePlayer(IServerPlayer player)
+    public boolean ContainsOnlinePlayer(IServerPlayer player)
     {
         GamePlayer TargetPlayer = _players.get(Objects.requireNonNull(player, "player is null"));
         return (TargetPlayer != null) && TargetPlayer.Player.GetIsOnline();
@@ -86,9 +85,9 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
 
 
     // Private methods.
-    private void UpdateActivePlayerList()
+    private void UpdateOnlinePlayerList()
     {
-         _activePlayers = _players.keySet().stream().filter(IServerPlayer::GetIsOnline).toList();
+         _onlinePlayers = _players.keySet().stream().filter(IServerPlayer::GetIsOnline).toList();
     }
 
 

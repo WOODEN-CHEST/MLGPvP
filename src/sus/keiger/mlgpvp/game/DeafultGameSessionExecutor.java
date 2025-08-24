@@ -7,9 +7,8 @@ import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.PCString;
 
 import java.util.Objects;
-import java.util.Optional;
 
-public class GameSessionExecutor implements IGameSessionExecutor
+public class DeafultGameSessionExecutor implements IGameSessionExecutor
 {
     // Private fields.
     private IGameInstance _gameInstance; // For now, a singleton.
@@ -18,7 +17,7 @@ public class GameSessionExecutor implements IGameSessionExecutor
 
 
     // Constructors.
-    public GameSessionExecutor(IServerServices services)
+    public DeafultGameSessionExecutor(IServerServices services)
     {
         _services = Objects.requireNonNull(services, "services is null");
         CreateNewGameInstance();

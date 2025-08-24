@@ -1,11 +1,15 @@
 package sus.keiger.mlgpvp;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import sus.keiger.mlgpvp.command.CommandInitializer;
+import sus.keiger.mlgpvp.game.DeafultGameSessionExecutor;
+import sus.keiger.mlgpvp.game.IGameSessionExecutor;
+import sus.keiger.mlgpvp.player.IPlayerStateController;
 import sus.keiger.mlgpvp.player.PlayerExistenceController;
 import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.mlgpvp.service.ServiceCreator;
 import sus.keiger.plugincommon.PCString;
+import sus.keiger.plugincommon.command.ListNode;
 
 import java.util.Objects;
 
@@ -17,6 +21,8 @@ public class ServerContext
     private boolean _isInitialized = false;
     private IServerServices _services;
     private PlayerExistenceController _playerExistenceController;
+    private IGameSessionExecutor _gameSessionExecutor;
+    private IPlayerStateController _playerStateController;
 
 
     // Constructors.
@@ -70,15 +76,19 @@ public class ServerContext
     {
         _services = new ServiceCreator().CreateServices(_plugin);
         _playerExistenceController = new PlayerExistenceController(_services);
+        _gameSessionExecutor = new DeafultGameSessionExecutor(_services);
     }
 
     private void InitializeObjects()
     {
         _playerExistenceController.SubscribeToEvents(_services.GetEventDispatcher());
+        _gameSessionExecutor.SubscribeToEvents(_services.GetEventDispatcher());
+        new CommandInitializer().InitializeCommands(_plugin, _services, _gameSessionExecutor);
     }
 
     private void DeinitializeObjects()
     {
         _playerExistenceController.UnsubscribeFromEvents(_services.GetEventDispatcher());
+        _gameSessionExecutor.UnsubscribeFromEvents(_services.GetEventDispatcher());
     }
 }

@@ -35,6 +35,8 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         {
             _playerEntities.put(PlayerEntity.GetServerPlayer(), PlayerEntity);
         }
+
+        UpdateEntityList();
     }
 
     public void RemoveEntity(GameEntity entity)
@@ -42,6 +44,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         _entities.remove(Objects.requireNonNull(entity, "entity is null").GetUnderlyingEntity());
         entity.Delete();
         entity.RemoveCleanup();
+        UpdateEntityList();
     }
 
     public List<GameEntity> GetEntities()

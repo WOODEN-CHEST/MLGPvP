@@ -92,6 +92,34 @@ public class GameInstanceValues
                 || (field.getAnnotation(GameStringField.class) != null);
     }
 
+    public static GameFieldType GetFieldType(Field field)
+    {
+        GameBoolField BoolField = field.getAnnotation(GameBoolField.class);
+        if (BoolField != null)
+        {
+            return GameFieldType.BoolField;
+        }
+
+        GameIntField IntField = field.getAnnotation(GameIntField.class);
+        if (IntField != null)
+        {
+            return GameFieldType.IntField;
+        }
+
+        GameDoubleField DoubleField = field.getAnnotation(GameDoubleField.class);
+        if (DoubleField != null)
+        {
+            return GameFieldType.DoubleField;
+        }
+
+        GameStringField StringField = field.getAnnotation(GameStringField.class);
+        if (StringField != null)
+        {
+            return GameFieldType.StringField;
+        }
+        throw new GameValuesException("Invalid field \"%s\"".formatted(field.toString()));
+    }
+
 
     // Methods.
     public void CopyValuesFrom(GameInstanceValues source)
@@ -119,6 +147,8 @@ public class GameInstanceValues
     public GameFieldProperties GetProperties(Field field)
     {
         Objects.requireNonNull(field, "field is null");
+
+        GameFieldType FieldType = GetFieldType(field);
 
         try
         {
@@ -158,5 +188,18 @@ public class GameInstanceValues
                     .formatted(PCString.ExceptionToString(e)));
         }
         throw new GameValuesException("Invalid field \"%s\"".formatted(field.toString()));
+    }
+
+    public void SetField(Field field, Object value)
+    {
+        try
+        {
+            field.set(this, value);
+        }
+        catch (IllegalAccessException | IllegalArgumentException e)
+        {
+            throw new GameValuesException("Failed to set field \"%s\": %s"
+                    .formatted(field.getName(), PCString.ExceptionToString(e)));
+        }
     }
 }

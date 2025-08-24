@@ -8,6 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import sus.keiger.mlgpvp.game.component.GameComponent;
 import sus.keiger.mlgpvp.game.component.GameEntityCollection;
+import sus.keiger.mlgpvp.game.component.GamePlayerCollection;
 import sus.keiger.mlgpvp.game.component.GameStateController;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
@@ -33,6 +34,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GameInstanceValues _values;
     private final GameStateController _stateController;
     private final GameEntityCollection _entities;
+    private final GamePlayerCollection _players;
 
 
     // Constructors.
@@ -44,9 +46,11 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
 
         _stateController = new GameStateController(this);
         _entities = new GameEntityCollection(this);
+        _players = new GamePlayerCollection(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
+        AddComponent(_players);
     }
 
 
@@ -150,50 +154,49 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public void AddPlayer(IServerPlayer player)
     {
-
-
+        _players.AddPlayer(player);
     }
 
     @Override
     public void RemovePlayer(IServerPlayer player)
     {
-
+        _players.RemovePlayer(player);
     }
 
     @Override
     public int GetJoinedPlayerCount()
     {
-        return 0;
+        return _players.GetJoinedPlayerCount();
     }
 
     @Override
     public List<IServerPlayer> GetJoinedPlayers()
     {
-        return List.of();
+        return _players.GetJoinedPlayers();
     }
 
     @Override
     public boolean ContainsJoinedPlayer(IServerPlayer player)
     {
-        return false;
+        return _players.ContainsJoinedPlayer(player);
     }
 
     @Override
     public int GetOnlinePlayerCount()
     {
-        return 0;
+        return _players.GetOnlinePlayerCount();
     }
 
     @Override
     public List<IServerPlayer> GetOnlinePlayers()
     {
-        return List.of();
+        return _players.GetOnlinePlayers();
     }
 
     @Override
     public boolean ContainsOnlinePlayer(IServerPlayer player)
     {
-        return false;
+        return _players.ContainsOnlinePlayer(player);
     }
 
     @Override
@@ -223,85 +226,85 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public GameInstanceValues GetConfigValues()
     {
-        return null;
+        return _values;
     }
 
     @Override
     public void Start()
     {
-
+        _stateController.SwitchToInGameState();
     }
 
     @Override
     public void Cancel()
     {
-
+        _stateController.SwitchToCompleteState();
     }
 
     @Override
     public GameInstanceState GetState()
     {
-        return null;
+        return _stateController.GetState();
     }
 
     @Override
     public PCPluginEvent<GameInstanceStartEvent> GetStartEvent()
     {
-        return null;
+        return _stateController.GetStartEvent();
     }
 
     @Override
     public PCPluginEvent<GameInstanceEndEvent> GetEndEvent()
     {
-        return null;
+        return _stateController.GetEndEvent();
     }
 
     @Override
     public PCPluginEvent<GameInstanceCompleteEvent> GetCompleteEvent()
     {
-        return null;
+        return _stateController.GetCompleteEvent();
     }
 
     @Override
     public List<? extends IAudienceMember> GetAudienceMembers()
     {
-        return List.of();
+        return _players.GetJoinedPlayers();
     }
 
     @Override
     public void ShowTitle(Title title)
     {
-
+        GetAudienceMembers().forEach(player -> player.ShowTitle(title));
     }
 
     @Override
     public void ClearTitle()
     {
-
+        GetAudienceMembers().forEach(IAudienceMember::ClearTitle);
     }
 
     @Override
     public void SendMessage(Component message)
     {
-
+        GetAudienceMembers().forEach(player -> player.SendMessage(message));
     }
 
     @Override
     public void ShowActionbar(ActionbarMessage message)
     {
-
+        GetAudienceMembers().forEach(player -> player.ShowActionbar(message));
     }
 
     @Override
     public void ClearActionbar()
     {
-
+        GetAudienceMembers().forEach(IAudienceMember::ClearActionbar);
     }
 
     @Override
     public void RemoveActionbar(long id)
     {
-
+        GetAudienceMembers().forEach(player -> player.RemoveActionbar(id));
     }
 
     @Override
@@ -314,18 +317,19 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
                                   double extra,
                                   T data)
     {
-
+        GetAudienceMembers().forEach(player -> player.SpawnParticle(
+                particle, location, deltaX, deltaY, deltaZ, count, extra, data));
     }
 
     @Override
     public void PlaySound(Sound sound, Location location, SoundCategory category, float volume, float pitch)
     {
-
+        GetAudienceMembers().forEach(player -> player.PlaySound(sound, location, category, volume, pitch));
     }
 
     @Override
     public void Tick()
     {
-
+        _components.forEach(GameComponent::Tick);
     }
 }
