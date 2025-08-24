@@ -3,10 +3,11 @@ package sus.keiger.mlgpvp.game.entity.component;
 import sus.keiger.mlgpvp.game.GameInstanceValues;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
+import sus.keiger.plugincommon.ITickable;
 
 import java.util.Objects;
 
-public class GameEntityComponent<T extends GameEntity>
+public class GameEntityComponent<T extends GameEntity> implements ITickable
 {
     // Private fields.
     private final T _entity;
@@ -33,5 +34,18 @@ public class GameEntityComponent<T extends GameEntity>
     public GameInstanceValues GetConfigValues()
     {
         return _entity.GetConfigValues();
+    }
+
+    public void Initialize()
+    {
+
+    }
+
+
+    // Inherited methods.
+    @Override
+    public void Tick()
+    {
+
     }
 }

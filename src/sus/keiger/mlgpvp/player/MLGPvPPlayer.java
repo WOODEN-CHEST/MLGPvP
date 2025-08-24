@@ -114,4 +114,20 @@ public class MLGPvPPlayer implements IServerPlayer
     {
 
     }
+
+    @Override
+    public int hashCode()
+    {
+        return _underlyingPlayer.getUniqueId().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof IServerPlayer TargetPlayer)
+        {
+            return TargetPlayer.GetUUID().equals(GetUUID());
+        }
+        return false;
+    }
 }

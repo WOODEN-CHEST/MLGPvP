@@ -14,4 +14,6 @@ public interface IServerPlayer extends IAudienceMember
     void AddReference(Object user);
     void RemoveReference(Object user);
     int GetReferenceCount();
+
+    boolean GetIsOnline();
 }

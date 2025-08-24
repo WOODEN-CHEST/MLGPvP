@@ -1,8 +1,16 @@
 package sus.keiger.mlgpvp.game;
 
 import sus.keiger.mlgpvp.game.entity.GameEntity;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceEndEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
+import sus.keiger.mlgpvp.player.IServerPlayer;
+import sus.keiger.mlgpvp.service.IServerServices;
+import sus.keiger.plugincommon.PCPluginEvent;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IGameInstanceExtended extends IGameInstance
 {
@@ -10,5 +18,18 @@ public interface IGameInstanceExtended extends IGameInstance
     void RemoveEntity(GameEntity entity);
     List<GameEntity> GetEntities();
     int GetEntityCount();
-    void SetState(GameInstanceState state);
+
+    IServerServices GetServices();
+
+    void SwitchToInGameState();
+    void SwitchToPostGameState();
+    void SwitchToCompleteState();
+
+    boolean TryReAddPlayer(IServerPlayer player);
+
+    Optional<PlayerGameStats> GetPlayerStats(IServerPlayer player);
+
+    PCPluginEvent<GameInstanceTickEvent> GetLobbyTickEvent();
+    PCPluginEvent<GameInstanceTickEvent> GetInGameTickEvent();
+    PCPluginEvent<GameInstanceTickEvent> GetPostGameTickEvent();
 }
