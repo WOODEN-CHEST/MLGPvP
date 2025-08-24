@@ -65,6 +65,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
             return false;
         }
         AddEntity(PlayerEntity);
+        PlayerEntity.SetUnderlyingEntity(player.GetUnderlyingPlayer());
         return true;
     }
 

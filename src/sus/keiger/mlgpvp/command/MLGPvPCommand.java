@@ -35,7 +35,7 @@ public class MLGPvPCommand extends ServerCommand
 
 
     // Constructors.
-    public MLGPvPCommand(IGameSessionExecutor gameSessionExecutor)
+    private MLGPvPCommand(IGameSessionExecutor gameSessionExecutor)
     {
         super(LABEL, null);
         _gameSessionExecutor = Objects.requireNonNull(gameSessionExecutor, "gameSessionExecutor is null");
@@ -139,13 +139,13 @@ public class MLGPvPCommand extends ServerCommand
         TextComponent.Builder Builder = Component.text();
         Builder.append(Component.text("Game settings:").color(NamedTextColor.GREEN));
 
-        TextColor[] Colors = new TextColor[] {NamedTextColor.AQUA, NamedTextColor.LIGHT_PURPLE};
+        TextColor[] Colors = new TextColor[] { NamedTextColor.AQUA, NamedTextColor.LIGHT_PURPLE };
         int ColorIndex = 0;
         for (Field ModifiableField : GameInstanceValues.GetModifiableFields())
         {
             GameFieldProperties Properties = _gameSessionExecutor.GetGlobalGameValues().GetProperties(ModifiableField);
-            Builder.append(Component.text("%s: %s".formatted(ModifiableField.getName(), Properties.Value())))
-                    .color(Colors[ColorIndex]);
+            Builder.append(Component.text("\n%s: %s".formatted(ModifiableField.getName(), Properties.Value()))
+                    .color(Colors[ColorIndex]));
 
             ColorIndex = (ColorIndex + 1) % Colors.length;
         }
@@ -161,21 +161,21 @@ public class MLGPvPCommand extends ServerCommand
         Builder.append(Component.text("Setting \"%s\"".formatted(field.getName()))
                 .color(NamedTextColor.GREEN));
 
-        Builder.append(Component.text("Description: %s".formatted(Properties.Description()))
+        Builder.append(Component.text("\nDescription: %s".formatted(Properties.Description()))
                 .color(NamedTextColor.AQUA));
 
-        Builder.append(Component.text("Value: \"%s\"".formatted(Properties.Value()))
+        Builder.append(Component.text("\nValue: \"%s\"".formatted(Properties.Value()))
                 .color(NamedTextColor.LIGHT_PURPLE));
 
         if (Properties.MinValue() != null)
         {
-            Builder.append(Component.text("Min Value: \"%s\"".formatted(Properties.MinValue()))
+            Builder.append(Component.text("\nMin Value: \"%s\"".formatted(Properties.MinValue()))
                     .color(NamedTextColor.GOLD));
         }
 
         if (Properties.MaxValue() != null)
         {
-            Builder.append(Component.text("Max Value: \"%s\"".formatted(Properties.MaxValue()))
+            Builder.append(Component.text("\nMax Value: \"%s\"".formatted(Properties.MaxValue()))
                     .color(NamedTextColor.GOLD));
         }
 
@@ -184,6 +184,9 @@ public class MLGPvPCommand extends ServerCommand
 
     private void SetField(CommandData data, Field field)
     {
-        _gameSessionExecutor.GetGlobalGameValues().SetField(field, data.GetParsedData(KEY_VALUE));
+        Object Value = data.GetParsedData(KEY_VALUE);
+        _gameSessionExecutor.GetGlobalGameValues().SetField(field, Value);
+        data.SetFeedback("Set field \"%S\" to \"%s\""
+                .formatted(field.getName(), Value.toString()));
     }
 }

@@ -27,14 +27,35 @@ public class PlayerExistenceController implements IMLGPvPEventListener
     private void OnPlayerJoinEvent(PlayerJoinEvent event)
     {
         IServerPlayer TargetPlayer = _services.GetPlayerCollection().GetPlayer(event.getPlayer())
-                .orElseGet(() -> new MLGPvPPlayer(event.getPlayer()));
+                .orElseGet(() ->
+                {
+                    IServerPlayer Player = new MLGPvPPlayer(event.getPlayer());
+                    Player.GetReferenceCountChangeEvent().Subscribe(this, this::OnPlayerReferenceCountChangeEvent);
+                    return Player;
+                });
         _services.GetPlayerCollection().AddPlayer(TargetPlayer);
     }
 
     private void OnPlayerQuitEvent(PlayerQuitEvent event)
     {
-        _services.GetPlayerCollection().GetPlayer(event.getPlayer())
-                .ifPresent(player -> _services.GetPlayerCollection().RemovePlayer(player));
+        _services.GetPlayerCollection().GetPlayer(event.getPlayer()).ifPresent(this::TryRemovePlayer);
+    }
+
+    private void OnPlayerReferenceCountChangeEvent(PlayerReferenceCountChangeEvent event)
+    {
+        if (!event.GetPlayer().GetIsOnline())
+        {
+            TryRemovePlayer(event.GetPlayer());
+        }
+    }
+
+    private void TryRemovePlayer(IServerPlayer player)
+    {
+        if (player.GetReferenceCount() == 0)
+        {
+            _services.GetPlayerCollection().RemovePlayer(player);
+            player.GetReferenceCountChangeEvent().Unsubscribe(this);
+        }
     }
 
 

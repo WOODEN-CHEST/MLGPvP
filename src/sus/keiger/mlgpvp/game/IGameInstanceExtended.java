@@ -1,9 +1,6 @@
 package sus.keiger.mlgpvp.game;
 
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceEndEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.mlgpvp.service.IServerServices;
@@ -22,7 +19,6 @@ public interface IGameInstanceExtended extends IGameInstance
     IServerServices GetServices();
 
     void SwitchToInGameState();
-    void SwitchToPostGameState();
     void SwitchToCompleteState();
 
     boolean TryReAddPlayer(IServerPlayer player);
@@ -31,5 +27,4 @@ public interface IGameInstanceExtended extends IGameInstance
 
     PCPluginEvent<GameInstanceTickEvent> GetLobbyTickEvent();
     PCPluginEvent<GameInstanceTickEvent> GetInGameTickEvent();
-    PCPluginEvent<GameInstanceTickEvent> GetPostGameTickEvent();
 }

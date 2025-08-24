@@ -4,6 +4,7 @@ import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.GameInstanceState;
 import sus.keiger.mlgpvp.game.IGameInstance;
 import sus.keiger.mlgpvp.game.IGameSessionExecutor;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.service.IServerServices;
 
 import java.util.Objects;
@@ -28,14 +29,22 @@ public class DefaultPlayerStateController implements IPlayerStateController
     private void OnPlayerAddEvent(PlayerCollectionAddEvent event)
     {
         IGameInstance CurrentGame = _sessionExecutor.GetCurrentGameInstance();
-        if ((CurrentGame.GetState() != GameInstanceState.Lobby)
-                && !CurrentGame.ContainsJoinedPlayer(event.GetPlayer()))
+        if ((CurrentGame.GetState() != GameInstanceState.Lobby))
         {
-            _sessionExecutor.GetCurrentGameInstance().AddSpectator(event.GetPlayer());
+            if (!CurrentGame.ContainsJoinedPlayer(event.GetPlayer()))
+            {
+                _sessionExecutor.GetCurrentGameInstance().AddSpectator(event.GetPlayer());
+            }
+            else
+            {
+                _sessionExecutor.GetCurrentGameInstance().AddPlayer(event.GetPlayer());
+            }
         }
     }
 
-    private void OnPlayerRemoveEvent(PlayerCollectionRemoveEvent event)
+    private void OnPlayerRemoveEvent(PlayerCollectionRemoveEvent event) { }
+
+    private void OnGameCompleteEvent(GameInstanceCompleteEvent event)
     {
 
     }

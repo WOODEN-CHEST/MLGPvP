@@ -1,6 +1,8 @@
 package sus.keiger.mlgpvp.game.entity;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.game.GameInstanceValues;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
@@ -76,6 +78,34 @@ public abstract class GameEntity implements ITickable
         _components.add(component);
     }
 
+    public void SetLocation(Location location)
+    {
+        _wrappedEntity.teleport(Objects.requireNonNull(location, "location is null"));
+    }
+
+    public Location GetLocation()
+    {
+        return _wrappedEntity.getLocation();
+    }
+
+    public Vector GetMotion()
+    {
+        return _wrappedEntity.getVelocity();
+    }
+
+    public void SetMotion(Vector motion)
+    {
+        _wrappedEntity.setVelocity(Objects.requireNonNull(motion, "motion is null"));
+    }
+
+    public void AddMotion(Vector motion)
+    {
+        SetMotion(GetMotion().add(Objects.requireNonNull(motion, "motion is null")));
+    }
+
+
+
+    // Inherited methods.
     @Override
     public void Tick()
     {

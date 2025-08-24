@@ -4,6 +4,7 @@ import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.plugincommon.ExplainedResult;
+import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.PCString;
 
 import java.util.Objects;
@@ -14,6 +15,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
     private IGameInstance _gameInstance; // For now, a singleton.
     private final GameInstanceValues _values = new GameInstanceValues();
     private final IServerServices _services;
+    private final PCPluginEvent<GameInstanceCompleteEvent> _gameCompleteEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -33,6 +35,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
 
     private void OnGameInstanceCompleteEvent(GameInstanceCompleteEvent event)
     {
+        _gameCompleteEvent.FireEvent(event);
         event.GetGameInstance().GetCompleteEvent().Unsubscribe(this);
         CreateNewGameInstance();
     }
@@ -62,6 +65,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
             }
 
             _services.GetPlayerCollection().GetPlayers().forEach(_gameInstance::AddPlayer);
+            _gameInstance.Start();
 
             return ExplainedResult.Success();
         }
@@ -94,6 +98,12 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
             return ExplainedResult.Error("Failed to canceling game due to an internal error: %s"
                     .formatted(e.getMessage()));
         }
+    }
+
+    @Override
+    public PCPluginEvent<GameInstanceCompleteEvent> GetGameCompleteEvent()
+    {
+        return null;
     }
 
     @Override

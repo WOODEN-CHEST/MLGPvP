@@ -4,6 +4,5 @@ public enum GameInstanceState
 {
     Lobby,
     InGame,
-    PostGame,
     Complete;
 }

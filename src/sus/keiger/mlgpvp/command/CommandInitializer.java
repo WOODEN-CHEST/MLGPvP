@@ -14,7 +14,7 @@ public class CommandInitializer
     // Methods.
     public void InitializeCommands(Plugin plugin, IServerServices services, IGameSessionExecutor sessionExecutor)
     {
-        InitOneCommand(MLGPvPCommand.LABEL, new MLGPvPCommand(sessionExecutor));
+        InitOneCommand(MLGPvPCommand.LABEL, MLGPvPCommand.CreteCommand(sessionExecutor));
     }
 
 

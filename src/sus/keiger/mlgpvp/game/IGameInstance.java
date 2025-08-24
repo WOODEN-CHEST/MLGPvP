@@ -1,7 +1,6 @@
 package sus.keiger.mlgpvp.game;
 
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceEndEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IAudienceMemberHolder;
 import sus.keiger.mlgpvp.player.IServerPlayer;
@@ -36,6 +35,5 @@ public interface IGameInstance extends IAudienceMemberHolder, ITickable
     GameInstanceState GetState();
 
     PCPluginEvent<GameInstanceStartEvent> GetStartEvent();
-    PCPluginEvent<GameInstanceEndEvent> GetEndEvent();
     PCPluginEvent<GameInstanceCompleteEvent> GetCompleteEvent();
 }

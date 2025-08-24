@@ -12,7 +12,6 @@ import sus.keiger.mlgpvp.game.component.GamePlayerCollection;
 import sus.keiger.mlgpvp.game.component.GameStateController;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceEndEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
 import sus.keiger.mlgpvp.player.IAudienceMember;
@@ -110,12 +109,6 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     }
 
     @Override
-    public void SwitchToPostGameState()
-    {
-        _stateController.SwitchToPostGameState();
-    }
-
-    @Override
     public void SwitchToCompleteState()
     {
         _stateController.SwitchToCompleteState();
@@ -143,12 +136,6 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     public PCPluginEvent<GameInstanceTickEvent> GetInGameTickEvent()
     {
         return _stateController.GetInGameTickEvent();
-    }
-
-    @Override
-    public PCPluginEvent<GameInstanceTickEvent> GetPostGameTickEvent()
-    {
-        return _stateController.GetPostGameTickEvent();
     }
 
     @Override
@@ -251,12 +238,6 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     public PCPluginEvent<GameInstanceStartEvent> GetStartEvent()
     {
         return _stateController.GetStartEvent();
-    }
-
-    @Override
-    public PCPluginEvent<GameInstanceEndEvent> GetEndEvent()
-    {
-        return _stateController.GetEndEvent();
     }
 
     @Override
