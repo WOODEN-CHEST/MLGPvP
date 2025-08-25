@@ -10,13 +10,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
-import sus.keiger.mlgpvp.game.entity.player.PlayerGameEntity;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.plugincommon.player.PlayerFunctions;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class PlayerInitializer extends GameEntityComponent<PlayerGameEntity>
+public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
 {
     // Private static fields.
     private static final int MAX_ITEMS_TO_ADD = 1024;
@@ -34,7 +33,7 @@ public class PlayerInitializer extends GameEntityComponent<PlayerGameEntity>
 
 
     // Constructors.
-    public PlayerInitializer(PlayerGameEntity entity)
+    public PlayerInitializer(GamePlayerEntity entity)
     {
         super(entity);
     }

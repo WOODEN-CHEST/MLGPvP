@@ -1,9 +1,8 @@
 package sus.keiger.mlgpvp.game.component;
 
-import org.bukkit.Bukkit;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.MLGPvPGameInstance;
-import sus.keiger.mlgpvp.game.entity.player.PlayerGameEntity;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 
 public class GamePlayerStateEnsurer extends GameComponent<MLGPvPGameInstance>
@@ -25,7 +24,7 @@ public class GamePlayerStateEnsurer extends GameComponent<MLGPvPGameInstance>
     {
         GetGameInstance().GetOnlinePlayers().forEach(player ->
         {
-            GetGameInstance().AddEntity(new PlayerGameEntity(GetGameInstance(), player));
+            GetGameInstance().AddEntity(new GamePlayerEntity(GetGameInstance(), player));
         });
     }
 

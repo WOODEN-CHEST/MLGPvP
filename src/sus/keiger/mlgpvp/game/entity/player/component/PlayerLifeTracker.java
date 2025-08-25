@@ -1,16 +1,16 @@
 package sus.keiger.mlgpvp.game.entity.player.component;
 
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
-import sus.keiger.mlgpvp.game.entity.player.PlayerGameEntity;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 
-public class PlayerLifeTracker extends GameEntityComponent<PlayerGameEntity>
+public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 {
     // Private fields.
     private boolean _isAlive = true;
 
 
     // Constructors.
-    public PlayerLifeTracker(PlayerGameEntity entity)
+    public PlayerLifeTracker(GamePlayerEntity entity)
     {
         super(entity);
     }

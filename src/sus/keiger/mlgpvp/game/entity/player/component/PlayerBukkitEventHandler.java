@@ -1,15 +1,21 @@
 package sus.keiger.mlgpvp.game.entity.player.component;
 
-import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Arrow;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.inventory.ItemStack;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
+import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
-import sus.keiger.mlgpvp.game.entity.player.PlayerGameEntity;
+import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
+import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponStats;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.plugincommon.item.ItemFunctions;
+import sus.keiger.plugincommon.player.PlayerFunctions;
 
-public class PlayerBukkitEventHandler extends GameEntityComponent<PlayerGameEntity>
+public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEntity>
 {
     // Constructors.
-    public PlayerBukkitEventHandler(PlayerGameEntity entity)
+    public PlayerBukkitEventHandler(GamePlayerEntity entity)
     {
         super(entity);
     }
@@ -18,10 +24,21 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<PlayerGameEnti
     // Private methods.
     private void OnEntityShootBowEvent(EntityShootBowEvent event)
     {
-        if (!event.getEntity().equals(GetEntity().GetUnderlyingEntity()))
+        if (!event.getEntity().equals(GetEntity().GetUnderlyingEntity())
+                || !(event.getProjectile() instanceof Arrow ArrowProjectile))
         {
             return;
         }
+
+        ExplosiveWeaponBuilder.GetWeaponStats(event.getBow()).ifPresent(stats ->
+        {
+            GameArrowEntity SpawnedEntity = new GameArrowEntity(
+                    GetGameInstance(),
+                    ArrowProjectile,
+                    GetEntity(),
+                    stats.StrengthScale());
+            GetGameInstance().AddEntity();
+        });
     }
 
 

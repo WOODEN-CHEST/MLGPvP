@@ -3,7 +3,7 @@ package sus.keiger.mlgpvp.game.component;
 import org.bukkit.entity.Entity;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.entity.player.PlayerGameEntity;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.plugincommon.ITickable;
 
@@ -14,7 +14,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
     // Private fields.
     private final Map<Entity, GameEntity> _entities = new HashMap<>();
     private List<GameEntity> _entitiesCopy = Collections.emptyList();
-    private final Map<IServerPlayer, PlayerGameEntity> _playerEntities = new HashMap<>();
+    private final Map<IServerPlayer, GamePlayerEntity> _playerEntities = new HashMap<>();
 
 
     // Constructors.
@@ -37,7 +37,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         _entities.put(entity.GetUnderlyingEntity(), entity);
         entity.Initialize();
 
-        if (entity instanceof PlayerGameEntity PlayerEntity)
+        if (entity instanceof GamePlayerEntity PlayerEntity)
         {
             _playerEntities.put(PlayerEntity.GetServerPlayer(), PlayerEntity);
         }
@@ -67,7 +67,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
 
     public boolean TryReAddPlayer(IServerPlayer player)
     {
-        PlayerGameEntity PlayerEntity = _playerEntities.get(Objects.requireNonNull(player, "player is null"));
+        GamePlayerEntity PlayerEntity = _playerEntities.get(Objects.requireNonNull(player, "player is null"));
         if (PlayerEntity == null)
         {
             return false;

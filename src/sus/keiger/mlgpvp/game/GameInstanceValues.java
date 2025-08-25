@@ -85,6 +85,9 @@ public class GameInstanceValues
     @GameBoolField(Description = "Whether directly hitting a player with an arrow causes an explosion.")
     public boolean ArrowsExplodeOnDirectImpact = false;
 
+    @GameBoolField(Description = "Whether explosions can destroy invulnerable blocks, for example, bedrock.")
+    public boolean MayExplosionsDestroyInvulnerableBlocks = false;
+
 
     // Static methods.
     public static List<Field> GetModifiableFields()
