@@ -5,6 +5,7 @@ import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
+import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.PCPluginEvent;
 
 public class GameStateController extends GameComponent<IGameInstanceExtended>
@@ -15,7 +16,6 @@ public class GameStateController extends GameComponent<IGameInstanceExtended>
     private final PCPluginEvent<GameInstanceCompleteEvent> _completeEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GameInstanceTickEvent> _lobbyTickEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GameInstanceTickEvent> _inGameTickEvent = new PCPluginEvent<>();
-    private final PCPluginEvent<GameInstanceTickEvent> _postGameTickEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -51,27 +51,24 @@ public class GameStateController extends GameComponent<IGameInstanceExtended>
         return _inGameTickEvent;
     }
 
-    public PCPluginEvent<GameInstanceTickEvent> GetPostGameTickEvent()
-    {
-        return _postGameTickEvent;
-    }
-
-    public void SwitchToInGameState()
+    public ExplainedResult SwitchToInGameState()
     {
        if (_state != GameInstanceState.Lobby)
        {
-           throw new IllegalStateException("Cannot switch to in-game state while in the %s state"
+           return ExplainedResult.Error("Cannot switch to in-game state while in the %s state"
                    .formatted(_state.toString()));
        }
 
         _state = GameInstanceState.InGame;
         _startEvent.FireEvent(new GameInstanceStartEvent(GetGameInstance()));
+        return ExplainedResult.Success();
     }
 
-    public void SwitchToCompleteState()
+    public ExplainedResult SwitchToCompleteState()
     {
         _state = GameInstanceState.Complete;
         _completeEvent.FireEvent(new GameInstanceCompleteEvent(GetGameInstance()));
+        return ExplainedResult.Success();
     }
 
 
@@ -84,11 +81,6 @@ public class GameStateController extends GameComponent<IGameInstanceExtended>
     private void InGameTick()
     {
         _inGameTickEvent.FireEvent(new GameInstanceTickEvent(GetGameInstance()));
-    }
-
-    private void PostGameTick()
-    {
-        _postGameTickEvent.FireEvent(new GameInstanceTickEvent(GetGameInstance()));
     }
 
 

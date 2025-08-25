@@ -3,6 +3,8 @@ package sus.keiger.mlgpvp.game.entity;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
+import sus.keiger.mlgpvp.event.IEventDispatcher;
+import sus.keiger.mlgpvp.event.IMLGPvPEventListener;
 import sus.keiger.mlgpvp.game.GameInstanceValues;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class GameEntity implements ITickable
+public abstract class GameEntity implements ITickable, IMLGPvPEventListener
 {
     // Private fields.
     private final IGameInstanceExtended _gameInstance;
@@ -103,6 +105,11 @@ public abstract class GameEntity implements ITickable
         SetMotion(GetMotion().add(Objects.requireNonNull(motion, "motion is null")));
     }
 
+    public void SetIsGlowing(boolean isGlowing)
+    {
+        GetUnderlyingEntity().setGlowing(isGlowing);
+    }
+
 
 
     // Inherited methods.
@@ -110,5 +117,17 @@ public abstract class GameEntity implements ITickable
     public void Tick()
     {
         _components.forEach(ITickable::Tick);
+    }
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        _components.forEach(component -> component.SubscribeToEvents(dispatcher));
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        _components.forEach(component -> component.UnsubscribeFromEvents(dispatcher));
     }
 }

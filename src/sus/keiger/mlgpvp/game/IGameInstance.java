@@ -1,15 +1,18 @@
 package sus.keiger.mlgpvp.game;
 
+import org.bukkit.Location;
+import sus.keiger.mlgpvp.event.IMLGPvPEventListener;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IAudienceMemberHolder;
 import sus.keiger.mlgpvp.player.IServerPlayer;
+import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.ITickable;
 import sus.keiger.plugincommon.PCPluginEvent;
 
 import java.util.List;
 
-public interface IGameInstance extends IAudienceMemberHolder, ITickable
+public interface IGameInstance extends IAudienceMemberHolder, ITickable, IMLGPvPEventListener
 {
     void AddPlayer(IServerPlayer player);
     void RemovePlayer(IServerPlayer player);
@@ -29,10 +32,13 @@ public interface IGameInstance extends IAudienceMemberHolder, ITickable
 
     GameInstanceValues GetConfigValues();
 
-    void Start();
-    void Cancel();
+    ExplainedResult Start();
+    ExplainedResult Cancel();
 
     GameInstanceState GetState();
+
+    void SetCenterLocation(Location location);
+    Location GetCenterLocation();
 
     PCPluginEvent<GameInstanceStartEvent> GetStartEvent();
     PCPluginEvent<GameInstanceCompleteEvent> GetCompleteEvent();

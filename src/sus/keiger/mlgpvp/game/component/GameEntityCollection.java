@@ -28,6 +28,12 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
     public void AddEntity(GameEntity entity)
     {
         Objects.requireNonNull(entity, "entity is null");
+
+        if (_entities.containsKey(entity.GetUnderlyingEntity()))
+        {
+            return;
+        }
+
         _entities.put(entity.GetUnderlyingEntity(), entity);
         entity.Initialize();
 
@@ -37,6 +43,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         }
 
         UpdateEntityList();
+        entity.SubscribeToEvents(GetServices().GetEventDispatcher());
     }
 
     public void RemoveEntity(GameEntity entity)
@@ -45,6 +52,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         entity.Delete();
         entity.RemoveCleanup();
         UpdateEntityList();
+        entity.UnsubscribeFromEvents(GetServices().GetEventDispatcher());
     }
 
     public List<GameEntity> GetEntities()
@@ -64,8 +72,8 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         {
             return false;
         }
-        AddEntity(PlayerEntity);
         PlayerEntity.SetUnderlyingEntity(player.GetUnderlyingPlayer());
+        AddEntity(PlayerEntity);
         return true;
     }
 

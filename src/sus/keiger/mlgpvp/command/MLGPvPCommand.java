@@ -4,10 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import sus.keiger.mlgpvp.game.GameFieldProperties;
-import sus.keiger.mlgpvp.game.GameFieldType;
-import sus.keiger.mlgpvp.game.GameInstanceValues;
-import sus.keiger.mlgpvp.game.IGameSessionExecutor;
+import sus.keiger.mlgpvp.game.*;
 import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.command.*;
 
@@ -24,6 +21,7 @@ public class MLGPvPCommand extends ServerCommand
     private static final String KEYWORD_START = "start";
     private static final String KEYWORD_CANCEL = "cancel";
     private static final String KEYWORD_SETTING = "setting";
+    private static final String KEYWORD_RESET = "reset";
 
     private static final String KEY_VALUE = "value";
 
@@ -50,6 +48,7 @@ public class MLGPvPCommand extends ServerCommand
 
         Data.AddSubNode(new KeywordNode(KEYWORD_START, Data::Start, null));
         Data.AddSubNode(new KeywordNode(KEYWORD_CANCEL, Data::Cancel, null));
+        Data.AddSubNode(new KeywordNode(KEYWORD_RESET, Data::ResetSettings, null));
 
         CommandNode SettingNode = new KeywordNode(KEYWORD_SETTING, Data::ShowSettings, null);
         Data.AddSubNode(SettingNode);
@@ -108,6 +107,7 @@ public class MLGPvPCommand extends ServerCommand
     // Private methods.
     private void Start(CommandData data)
     {
+        _gameSessionExecutor.GetCurrentGameInstance().SetCenterLocation(data.GetLocation());
         ExplainedResult StartResult = _gameSessionExecutor.StartGame();
         if (StartResult.IsSuccessful())
         {
@@ -132,6 +132,12 @@ public class MLGPvPCommand extends ServerCommand
             data.SetStatus(CommandStatus.Unsuccessful);
             data.SetFeedback("Couldn't cancel game, reason: %s".formatted(CancelResult.GetMessage()));
         }
+    }
+
+    private void ResetSettings(CommandData data)
+    {
+        _gameSessionExecutor.GetGlobalGameValues().Reset();
+        data.SetFeedback("Reset all game settings to their default values.");
     }
 
     private void ShowSettings(CommandData data)
@@ -186,7 +192,7 @@ public class MLGPvPCommand extends ServerCommand
     {
         Object Value = data.GetParsedData(KEY_VALUE);
         _gameSessionExecutor.GetGlobalGameValues().SetField(field, Value);
-        data.SetFeedback("Set field \"%S\" to \"%s\""
+        data.SetFeedback("Set field \"%s\" to \"%s\""
                 .formatted(field.getName(), Value.toString()));
     }
 }

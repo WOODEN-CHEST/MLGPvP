@@ -56,7 +56,17 @@ public class GameInstanceValues
 
     @GameIntField(Description = "The amount of arrows granted to each player.",
             MinValue = 0, MaxValue = 512)
-    public int ArrowCount = 64;
+    public int ArrowCount = 128;
+
+    @GameBoolField(Description = "Whether the players are given the explosive bow")
+    public boolean IsExplosiveBowEnabled = true;
+
+    @GameBoolField(Description = "Whether the players are given the explosive crossbow")
+    public boolean IsExplosiveCrossbowEnabled = true;
+
+    @GameIntField(Description = "The feather falling level applied to boots.",
+            MinValue = 0, MaxValue = 10)
+    public int FeatherFallingLevel = 2;
 
 
     /* Explosions */

@@ -6,10 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import sus.keiger.mlgpvp.game.component.GameComponent;
-import sus.keiger.mlgpvp.game.component.GameEntityCollection;
-import sus.keiger.mlgpvp.game.component.GamePlayerCollection;
-import sus.keiger.mlgpvp.game.component.GameStateController;
+import sus.keiger.mlgpvp.event.IEventDispatcher;
+import sus.keiger.mlgpvp.game.component.*;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
@@ -17,6 +15,7 @@ import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
 import sus.keiger.mlgpvp.player.IAudienceMember;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.mlgpvp.service.IServerServices;
+import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
@@ -31,9 +30,12 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final List<GameComponent<?>> _components = new ArrayList<>();
     private final IServerServices _services;
     private final GameInstanceValues _values;
+
     private final GameStateController _stateController;
     private final GameEntityCollection _entities;
     private final GamePlayerCollection _players;
+    private final GameLocation _location;
+    private final GamePlayerStateEnsurer _playerStateEnsurer;
 
 
     // Constructors.
@@ -46,10 +48,14 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _stateController = new GameStateController(this);
         _entities = new GameEntityCollection(this);
         _players = new GamePlayerCollection(this);
+        _location = new GameLocation(this);
+        _playerStateEnsurer = new GamePlayerStateEnsurer(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
         AddComponent(_players);
+        AddComponent(_location);
+        AddComponent(_playerStateEnsurer);
     }
 
 
@@ -217,21 +223,38 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     }
 
     @Override
-    public void Start()
+    public ExplainedResult Start()
     {
-        _stateController.SwitchToInGameState();
+        if (_stateController.GetState() != GameInstanceState.Lobby)
+        {
+            return ExplainedResult.Error("Games can only be started while in the lobby state.");
+        }
+
+        return _stateController.SwitchToInGameState();
     }
 
     @Override
-    public void Cancel()
+    public ExplainedResult Cancel()
     {
-        _stateController.SwitchToCompleteState();
+        return _stateController.SwitchToCompleteState();
     }
 
     @Override
     public GameInstanceState GetState()
     {
         return _stateController.GetState();
+    }
+
+    @Override
+    public void SetCenterLocation(Location location)
+    {
+        _location.SetCenterLocation(location);
+    }
+
+    @Override
+    public Location GetCenterLocation()
+    {
+        return _location.GetCenterLocation();
     }
 
     @Override
@@ -312,5 +335,17 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     public void Tick()
     {
         _components.forEach(GameComponent::Tick);
+    }
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        _components.forEach(component -> component.SubscribeToEvents(dispatcher));
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        _components.forEach(component -> component.UnsubscribeFromEvents(dispatcher));
     }
 }

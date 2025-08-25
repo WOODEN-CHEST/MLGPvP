@@ -1,5 +1,6 @@
 package sus.keiger.mlgpvp.game;
 
+import org.bukkit.Bukkit;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.service.IServerServices;
@@ -30,6 +31,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
     private void CreateNewGameInstance()
     {
         _gameInstance = new MLGPvPGameInstance(new GameInstanceCreationOptions(_services, _values));
+        _gameInstance.SubscribeToEvents(_services.GetEventDispatcher());
         _gameInstance.GetCompleteEvent().Subscribe(this, this::OnGameInstanceCompleteEvent);
     }
 
@@ -37,6 +39,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
     {
         _gameCompleteEvent.FireEvent(event);
         event.GetGameInstance().GetCompleteEvent().Unsubscribe(this);
+        event.GetGameInstance().UnsubscribeFromEvents(_services.GetEventDispatcher());
         CreateNewGameInstance();
     }
 
@@ -65,9 +68,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
             }
 
             _services.GetPlayerCollection().GetPlayers().forEach(_gameInstance::AddPlayer);
-            _gameInstance.Start();
-
-            return ExplainedResult.Success();
+            return _gameInstance.Start();
         }
         catch (Exception e)
         {
@@ -88,8 +89,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
 
         try
         {
-            _gameInstance.Cancel();
-            return ExplainedResult.Success();
+            return _gameInstance.Cancel();
         }
         catch (Exception e)
         {
