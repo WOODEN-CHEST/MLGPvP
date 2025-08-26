@@ -3,17 +3,17 @@ package sus.keiger.mlgpvp.game.entity.player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.component.PlayerBukkitEventHandler;
-import sus.keiger.mlgpvp.game.entity.player.component.PlayerInitializer;
 import sus.keiger.mlgpvp.game.entity.player.component.PlayerLifeTracker;
+import sus.keiger.mlgpvp.game.entity.player.component.PlayerMLGTracker;
+import sus.keiger.mlgpvp.game.entity.player.component.PlayerStateInitializer;
+import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
 import sus.keiger.mlgpvp.player.IAudienceMember;
 import sus.keiger.mlgpvp.player.IServerPlayer;
+import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
 import java.util.Objects;
@@ -23,9 +23,10 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     // Private fields.
     private final IServerPlayer _serverPlayer;
 
-    private final PlayerInitializer _initializer;
     private final PlayerLifeTracker _lifeTracker;
     private final PlayerBukkitEventHandler _eventHandler;
+    private final PlayerStateInitializer _stateInitializer;
+    private final PlayerMLGTracker _mlgTracker;
 
 
     // Constructors.
@@ -34,13 +35,15 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         super(gameInstance, Objects.requireNonNull(serverPlayer, "serverPlayer is null").GetUnderlyingPlayer());
         _serverPlayer = serverPlayer;
 
-        _initializer = new PlayerInitializer(this);
         _lifeTracker = new PlayerLifeTracker(this);
         _eventHandler = new PlayerBukkitEventHandler(this);
+        _stateInitializer = new PlayerStateInitializer(this);
+        _mlgTracker = new PlayerMLGTracker(this);
 
-        AddComponent(_initializer);
         AddComponent(_lifeTracker);
         AddComponent(_eventHandler);
+        AddComponent(_stateInitializer);
+        AddComponent(_mlgTracker);
     }
 
 
@@ -92,11 +95,22 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
 
     public void ResetHealth()
     {
-        AttributeInstance Health = GetPlayerEntity().getAttribute(Attribute.MAX_HEALTH);
-        if (Health != null)
-        {
-            GetPlayerEntity().setHealth(Health.getValue());
-        }
+        _lifeTracker.ResetHealth();
+    }
+
+    public void Spawn()
+    {
+        _lifeTracker.Spawn();
+    }
+
+    public PCPluginEvent<PlayerLifeChangeEvent> GetLifeChangeEvent()
+    {
+        return _lifeTracker.GetLifeChangeEvent();
+    }
+
+    public void MarkClimbStart()
+    {
+        _mlgTracker.MarkClimbStart();
     }
 
 

@@ -9,6 +9,8 @@ import sus.keiger.mlgpvp.player.IPlayerStateController;
 import sus.keiger.mlgpvp.player.PlayerExistenceController;
 import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.mlgpvp.service.ServiceCreator;
+import sus.keiger.plugincommon.DefaultTickExecutor;
+import sus.keiger.plugincommon.ITickExecutor;
 import sus.keiger.plugincommon.PCString;
 
 import java.util.Objects;
@@ -23,6 +25,8 @@ public class ServerContext
     private PlayerExistenceController _playerExistenceController;
     private IGameSessionExecutor _gameSessionExecutor;
     private IPlayerStateController _playerStateController;
+
+    private final ITickExecutor _tickExecutor = new DefaultTickExecutor();
 
 
     // Constructors.
@@ -87,6 +91,11 @@ public class ServerContext
         _gameSessionExecutor.SubscribeToEvents(_services.GetEventDispatcher());
         new CommandInitializer().InitializeCommands(_plugin, _services, _gameSessionExecutor);
         _playerStateController.SubscribeToEvents(_services.GetEventDispatcher());
+
+        _services.GetEventDispatcher().GetTickEvent().Subscribe(this, (event) -> _tickExecutor.Tick());
+
+        _tickExecutor.AddTickable(_playerStateController);
+        _tickExecutor.AddTickable(_gameSessionExecutor);
     }
 
     private void DeinitializeObjects()
@@ -94,5 +103,8 @@ public class ServerContext
         _playerExistenceController.UnsubscribeFromEvents(_services.GetEventDispatcher());
         _gameSessionExecutor.UnsubscribeFromEvents(_services.GetEventDispatcher());
         _playerStateController.UnsubscribeFromEvents(_services.GetEventDispatcher());
+
+        _services.GetEventDispatcher().GetTickEvent().Unsubscribe(this);
+        _tickExecutor.ClearTickables();
     }
 }

@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import sus.keiger.plugincommon.PCString;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.Locale;
 
 public class MLGPvPPlugin extends JavaPlugin
@@ -28,6 +31,11 @@ public class MLGPvPPlugin extends JavaPlugin
     public static Locale GetLocale()
     {
         return Locale.ROOT;
+    }
+
+    public static NumberFormat GetFormat(String format)
+    {
+        return new DecimalFormat(format, DecimalFormatSymbols.getInstance(GetLocale()));
     }
 
 

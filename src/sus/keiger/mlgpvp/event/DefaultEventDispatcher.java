@@ -1,12 +1,11 @@
 package sus.keiger.mlgpvp.event;
 
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import sus.keiger.plugincommon.EmptyEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
 
 public class DefaultEventDispatcher implements IEventDispatcher
@@ -17,7 +16,9 @@ public class DefaultEventDispatcher implements IEventDispatcher
     private final PCPluginEvent<EntityShootBowEvent> _shootBowEvent = new PCPluginEvent<>();
     private final PCPluginEvent<ProjectileHitEvent> _projectileHitEvent = new PCPluginEvent<>();
     private final PCPluginEvent<EntityDamageEvent> _entityDamageEvent = new PCPluginEvent<>();
-    private final PCPluginEvent<EntityDeathEvent> _entityDeathEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<PlayerDeathEvent> _playerDeathEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<EmptyEvent> _tickEvent = new PCPluginEvent<>();
+    private final EmptyEvent _emptyEventArgs = new EmptyEvent();
 
 
     // Methods.
@@ -52,9 +53,15 @@ public class DefaultEventDispatcher implements IEventDispatcher
     }
 
     @EventHandler
-    public void OnEntityDeathEvent(EntityDeathEvent event)
+    public void OnEntityDeathEvent(PlayerDeathEvent event)
     {
-        _entityDeathEvent.FireEvent(event);
+        _playerDeathEvent.FireEvent(event);
+    }
+
+    @EventHandler
+    public void OnTickStartEvent(ServerTickStartEvent event)
+    {
+        _tickEvent.FireEvent(_emptyEventArgs);
     }
 
 
@@ -90,8 +97,14 @@ public class DefaultEventDispatcher implements IEventDispatcher
     }
 
     @Override
-    public PCPluginEvent<EntityDeathEvent> GetEntityDeathEvent()
+    public PCPluginEvent<PlayerDeathEvent> GetEntityDeathEvent()
     {
-        return _entityDeathEvent;
+        return _playerDeathEvent;
+    }
+
+    @Override
+    public PCPluginEvent<EmptyEvent> GetTickEvent()
+    {
+        return _tickEvent;
     }
 }

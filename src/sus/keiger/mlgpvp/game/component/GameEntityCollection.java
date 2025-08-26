@@ -1,9 +1,11 @@
 package sus.keiger.mlgpvp.game.component;
 
 import org.bukkit.entity.Entity;
+import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.plugincommon.ITickable;
 
@@ -84,6 +86,11 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         _entitiesCopy = List.copyOf(_entities.values());
     }
 
+    private void OnGameCompleteEvent(GameInstanceCompleteEvent event)
+    {
+        _entitiesCopy.forEach(this::RemoveEntity);
+    }
+
 
 
     // Inherited methods.
@@ -93,5 +100,21 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         super.Tick();
 
         _entitiesCopy.forEach(ITickable::Tick);
+    }
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        super.SubscribeToEvents(dispatcher);
+
+        GetGameInstance().GetCompleteEvent().Subscribe(this, this::OnGameCompleteEvent);
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        super.UnsubscribeFromEvents(dispatcher);
+
+        GetGameInstance().GetCompleteEvent().Unsubscribe(this);
     }
 }

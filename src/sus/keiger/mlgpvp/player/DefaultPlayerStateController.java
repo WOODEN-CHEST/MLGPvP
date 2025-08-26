@@ -6,6 +6,7 @@ import sus.keiger.mlgpvp.game.IGameInstance;
 import sus.keiger.mlgpvp.game.IGameSessionExecutor;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.service.IServerServices;
+import sus.keiger.plugincommon.ITickable;
 
 import java.util.Objects;
 
@@ -68,6 +69,6 @@ public class DefaultPlayerStateController implements IPlayerStateController
     @Override
     public void Tick()
     {
-
+        _services.GetPlayerCollection().GetPlayers().forEach(ITickable::Tick);
     }
 }

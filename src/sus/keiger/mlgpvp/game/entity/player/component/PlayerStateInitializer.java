@@ -8,14 +8,16 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
 import sus.keiger.plugincommon.player.PlayerFunctions;
 
 import java.util.function.Supplier;
 
-public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
+public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity>
 {
     // Private static fields.
     private static final int MAX_ITEMS_TO_ADD = 1024;
@@ -35,13 +37,36 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
 
 
     // Constructors.
-    public PlayerInitializer(GamePlayerEntity entity)
+    public PlayerStateInitializer(GamePlayerEntity entity)
     {
         super(entity);
     }
 
 
     // Private methods.
+    private void OnPlayerLifeChangeEvent(PlayerLifeChangeEvent event)
+    {
+        if (event.GetIsAlive())
+        {
+            SetToPlayState();
+        }
+        else
+        {
+            SetToDeadState();
+        }
+    }
+
+    private void SetToPlayState()
+    {
+        InitInventory();
+        InitializeAliveProperties();
+    }
+
+    private void SetToDeadState()
+    {
+        InitDeadProperties();
+    }
+
     private void InitInventory()
     {
         PlayerFunctions.ClearInventory(GetEntity().GetPlayerEntity());
@@ -145,7 +170,7 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
         }
     }
 
-    private void InitializeProperties()
+    private void InitializeAliveProperties()
     {
         GetEntity().SetFood(PlayerFunctions.MAX_FOOD);
         GetEntity().SetSaturation(PlayerFunctions.MAX_SATURATION);
@@ -156,6 +181,13 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
         GetEntity().ResetHealth();
     }
 
+    private void InitDeadProperties()
+    {
+        GetEntity().SetGameMode(GameMode.SPECTATOR);
+        GetEntity().ClearPotionEffects();
+        GetEntity().SetIsGlowing(false);
+    }
+
 
     // Inherited methods.
 
@@ -163,7 +195,22 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
     public void Initialize()
     {
         super.Initialize();
-        InitInventory();
-        InitializeProperties();
+        SetToPlayState();
+    }
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        super.SubscribeToEvents(dispatcher);
+
+        GetEntity().GetLifeChangeEvent().Subscribe(this, this::OnPlayerLifeChangeEvent);
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        super.UnsubscribeFromEvents(dispatcher);
+
+        GetEntity().GetLifeChangeEvent().Unsubscribe(this);
     }
 }

@@ -5,6 +5,7 @@ public class PlayerGameStats
     // Private fields.
     private double _distanceClimbed = 0d;
     private double _distanceFallen = 0d;
+    private double _highestClimb = 0d;
     private long _shotsFired = 0L;
     private long _arrowsFired = 0L;
     private long _arrowsExploded = 0L;
@@ -118,6 +119,17 @@ public class PlayerGameStats
     public long GetWaterBucketsLanded()
     {
         return _waterBucketsLanded;
+    }
+
+    public void SetHighestClimb(double value)
+    {
+        GenericValidateDouble("highest climb", value);
+        _highestClimb = Math.max(0d, value);
+    }
+
+    public double GetHighestClimb()
+    {
+        return _highestClimb;
     }
 
 

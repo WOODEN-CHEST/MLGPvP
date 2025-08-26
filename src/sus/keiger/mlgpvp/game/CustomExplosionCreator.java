@@ -160,6 +160,11 @@ public class CustomExplosionCreator implements IExplosionCreator
                     .multiply(factor * strength);
 
             player.AddMotion(AddedMotion);
+
+            if (AddedMotion.getY() > 0d)
+            {
+                player.MarkClimbStart();
+            }
         });
     }
 
@@ -178,7 +183,10 @@ public class CustomExplosionCreator implements IExplosionCreator
             }
 
             double Factor = DistanceToFactor(Radius, explosionLocation.distance(Entity.GetCenter()));
-            function.accept(PlayerEntity, Factor);
+            if (Factor > 0d)
+            {
+                function.accept(PlayerEntity, Factor);
+            }
         }
     }
 
@@ -194,7 +202,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         double FinalKnockbackStrength = options.GetKnockbackScale() * options.GetStrengthScale();
 
         DestroyBlocks(TargetLocation, FinalBlockStrength);
-        DealDamage(TargetLocation, FinalDamageStrength);
+        //DealDamage(TargetLocation, FinalDamageStrength);
         DealKnockback(TargetLocation, FinalKnockbackStrength);
         CreateExplosionContent(TargetLocation, FinalBlockStrength);
     }
