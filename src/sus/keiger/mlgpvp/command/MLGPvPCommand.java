@@ -21,7 +21,7 @@ public class MLGPvPCommand extends ServerCommand
     private static final String KEYWORD_START = "start";
     private static final String KEYWORD_CANCEL = "cancel";
     private static final String KEYWORD_SETTING = "setting";
-    private static final String KEYWORD_RESET = "reset";
+    private static final String KEYWORD_RESET_SETTINGS = "reset_settings";
 
     private static final String KEY_VALUE = "value";
 
@@ -48,7 +48,7 @@ public class MLGPvPCommand extends ServerCommand
 
         Data.AddSubNode(new KeywordNode(KEYWORD_START, Data::Start, null));
         Data.AddSubNode(new KeywordNode(KEYWORD_CANCEL, Data::Cancel, null));
-        Data.AddSubNode(new KeywordNode(KEYWORD_RESET, Data::ResetSettings, null));
+        Data.AddSubNode(new KeywordNode(KEYWORD_RESET_SETTINGS, Data::ResetSettings, null));
 
         CommandNode SettingNode = new KeywordNode(KEYWORD_SETTING, Data::ShowSettings, null);
         Data.AddSubNode(SettingNode);

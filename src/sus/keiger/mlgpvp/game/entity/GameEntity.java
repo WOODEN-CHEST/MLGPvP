@@ -3,6 +3,7 @@ package sus.keiger.mlgpvp.game.entity;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.C;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.event.IMLGPvPEventListener;
 import sus.keiger.mlgpvp.game.GameInstanceValues;
@@ -108,6 +109,12 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
     public void SetIsGlowing(boolean isGlowing)
     {
         GetUnderlyingEntity().setGlowing(isGlowing);
+    }
+
+    public Location GetCenter()
+    {
+        Vector Center = GetUnderlyingEntity().getBoundingBox().getCenter();
+        return GetLocation().set(Center.getX(), Center.getY(), Center.getZ());
     }
 
 

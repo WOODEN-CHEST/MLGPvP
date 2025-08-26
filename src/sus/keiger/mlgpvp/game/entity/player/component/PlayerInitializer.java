@@ -30,6 +30,8 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
     private static final double POWER_CROSSBOW = 1.75d;
     private static final boolean DOES_CROSSBOW_USE_ARROWS = true;
 
+    private static final int PROTECTION_LEVEL = 2;
+
 
 
     // Constructors.
@@ -53,15 +55,12 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
         AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_AXE), 1, null);
         AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_SHOVEL), 1, null);
         AddItems(() -> ItemStack.of(Material.TOTEM_OF_UNDYING), GetConfigValues().TotemCount, SLOT_FIRST_TOTEM);
+        AddItems(() -> ItemStack.of(Material.ARROW), GetConfigValues().ArrowCount, null);
 
-        int ArmorSetCount = GetConfigValues().ArmorSetCount;
-        for (int i = 0; i < ArmorSetCount; i++)
-        {
-            AddItems(() -> CreateArmor(Material.NETHERITE_HELMET), 1, SLOT_FIRST_HELMET);
-            AddItems(() -> CreateArmor(Material.NETHERITE_CHESTPLATE), 1, SLOT_FIRST_CHESTPLATE);
-            AddItems(() -> CreateArmor(Material.NETHERITE_LEGGINGS), 1, SLOT_FIRST_LEGGINGS);
-            AddItems(() -> CreateArmor(Material.NETHERITE_BOOTS), 1, SLOT_FIRST_BOOTS);
-        }
+        AddItems(() -> CreateArmor(Material.NETHERITE_HELMET), 1, SLOT_FIRST_HELMET);
+        AddItems(() -> CreateArmor(Material.NETHERITE_CHESTPLATE), 1, SLOT_FIRST_CHESTPLATE);
+        AddItems(() -> CreateArmor(Material.NETHERITE_LEGGINGS), 1, SLOT_FIRST_LEGGINGS);
+        AddItems(() -> CreateArmor(Material.NETHERITE_BOOTS), 1, SLOT_FIRST_BOOTS);
     }
 
     private ItemStack CreateUnbreakableTool(Material material)
@@ -76,7 +75,7 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
         ItemStack Item = CreateUnbreakableTool(material);
         Item.editMeta(meta ->
         {
-            meta.addEnchant(Enchantment.PROTECTION, 1, true);
+            meta.addEnchant(Enchantment.PROTECTION, PROTECTION_LEVEL, true);
             if (Enchantment.FEATHER_FALLING.canEnchantItem(Item) && (GetConfigValues().FeatherFallingLevel > 0))
             {
                 meta.addEnchant(Enchantment.FEATHER_FALLING, GetConfigValues().FeatherFallingLevel, true);
@@ -154,6 +153,7 @@ public class PlayerInitializer extends GameEntityComponent<GamePlayerEntity>
         GetEntity().SetIsGlowing(true);
         GetEntity().SetGameMode(GameMode.SURVIVAL);
         GetEntity().SetIsAlive(true);
+        GetEntity().ResetHealth();
     }
 
 

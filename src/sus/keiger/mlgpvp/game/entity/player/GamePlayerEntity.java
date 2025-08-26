@@ -3,6 +3,9 @@ package sus.keiger.mlgpvp.game.entity.player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Player;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
@@ -82,12 +85,26 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         return _lifeTracker.GetIsAlive();
     }
 
+    public void Damage(double amount)
+    {
+        _lifeTracker.Damage(amount);
+    }
+
+    public void ResetHealth()
+    {
+        AttributeInstance Health = GetPlayerEntity().getAttribute(Attribute.MAX_HEALTH);
+        if (Health != null)
+        {
+            GetPlayerEntity().setHealth(Health.getValue());
+        }
+    }
+
 
     // Inherited methods.
     @Override
     public void Delete()
     {
-        /* Player's should never be deleted. */
+        /* Players should never be deleted. */
     }
 
     @Override

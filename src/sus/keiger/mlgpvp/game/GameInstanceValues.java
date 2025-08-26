@@ -46,10 +46,6 @@ public class GameInstanceValues
             MinValue = 0, MaxValue = 16)
     public int WaterBucketCount = 2;
 
-    @GameIntField(Description = "The amount of full armor sets granted to each player.",
-            MinValue = 0, MaxValue = 4)
-    public int ArmorSetCount = 2;
-
     @GameIntField(Description = "The amount of golden apples granted to each player.",
             MinValue = 0, MaxValue = 128)
     public int GoldenAppleCount = 16;
@@ -84,9 +80,6 @@ public class GameInstanceValues
 
     @GameBoolField(Description = "Whether directly hitting a player with an arrow causes an explosion.")
     public boolean ArrowsExplodeOnDirectImpact = false;
-
-    @GameBoolField(Description = "Whether explosions can destroy invulnerable blocks, for example, bedrock.")
-    public boolean MayExplosionsDestroyInvulnerableBlocks = false;
 
 
     // Static methods.
@@ -160,9 +153,6 @@ public class GameInstanceValues
     public GameFieldProperties GetProperties(Field field)
     {
         Objects.requireNonNull(field, "field is null");
-
-        GameFieldType FieldType = GetFieldType(field);
-
         try
         {
             GameBoolField BoolField = field.getAnnotation(GameBoolField.class);

@@ -37,7 +37,7 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
                     ArrowProjectile,
                     GetEntity(),
                     stats.StrengthScale());
-            GetGameInstance().AddEntity();
+            GetGameInstance().AddEntity(SpawnedEntity);
         });
     }
 

@@ -12,7 +12,6 @@ public class ExplosionCreateOptions
     private final double _blockScale;
     private final double _damageScale;
     private final double _knockbackScale;
-    private final boolean _mayDestroyInvulnerableBlocks;
 
 
     // Constructors.
@@ -20,15 +19,13 @@ public class ExplosionCreateOptions
                                    double strengthScale,
                                    double blockScale,
                                    double damageScale,
-                                   double knockbackScale,
-                                   boolean mayDestroyInvulnerableBlocks)
+                                   double knockbackScale)
     {
         _location = Objects.requireNonNull(location, "location is null");
         _strengthScale = strengthScale;
         _blockScale = blockScale;
         _damageScale = damageScale;
         _knockbackScale = knockbackScale;
-        _mayDestroyInvulnerableBlocks = mayDestroyInvulnerableBlocks;
 
     }
 
@@ -59,26 +56,19 @@ public class ExplosionCreateOptions
         return _knockbackScale;
     }
 
-    public boolean GetMayDestroyInvulnerableBlocks()
-    {
-        return _mayDestroyInvulnerableBlocks;
-    }
-
 
     // Static methods.
     public static ExplosionCreateOptions Create(Location location,
                                                 double strengthScale,
                                                 double blockScale,
                                                 double damageScale,
-                                                double knockbackScale,
-                                                boolean mayDestroyInvulnerableBlocks)
+                                                double knockbackScale)
     {
         return new ExplosionCreateOptions(location,
                 strengthScale,
                 blockScale,
                 damageScale,
-                knockbackScale,
-                mayDestroyInvulnerableBlocks);
+                knockbackScale);
     }
 
     public static ExplosionCreateOptions CreateFromValues(Location location,
@@ -87,9 +77,8 @@ public class ExplosionCreateOptions
     {
         return new ExplosionCreateOptions(location,
                 strengthScale,
-                values.ExplosionBlockDamageScale * strengthScale,
-                values.ExplosionDamageScale * strengthScale,
-                values.ExplosionKnockbackScale * strengthScale,
-                values.MayExplosionsDestroyInvulnerableBlocks);
+                values.ExplosionBlockDamageScale,
+                values.ExplosionDamageScale,
+                values.ExplosionKnockbackScale);
     }
 }
