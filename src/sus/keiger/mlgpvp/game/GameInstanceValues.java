@@ -66,20 +66,32 @@ public class GameInstanceValues
 
 
     /* Explosions */
-    @GameIntField(Description = "The scale of explosion knockback.",
+    @GameDoubleField(Description = "The scale of explosion knockback.",
             MinValue = 0, MaxValue = 16)
     public double ExplosionKnockbackScale = 1d;
 
-    @GameIntField(Description = "The scale of explosion damage to players' health.",
+    @GameDoubleField(Description = "The scale of explosion damage to players' health.",
             MinValue = 0, MaxValue = 16)
     public double ExplosionDamageScale = 1d;
 
-    @GameIntField(Description = "The scale of explosion block destruction radius.",
+    @GameDoubleField(Description = "The scale of explosion block destruction radius.",
             MinValue = 0, MaxValue = 16)
     public double ExplosionBlockDamageScale = 1d;
 
     @GameBoolField(Description = "Whether directly hitting a player with an arrow causes an explosion.")
     public boolean ArrowsExplodeOnDirectImpact = false;
+
+    @GameDoubleField(Description = "The scale of bow explosion power.",
+            MinValue = 0, MaxValue = 10d)
+    public double BowExplosionPower = 1d;
+
+    @GameDoubleField(Description = "The scale of crossbow explosion power.",
+            MinValue = 0, MaxValue = 10d)
+    public double CrossbowExplosionPower = 2.1d;
+
+    @GameBoolField(Description = "Whether the climb height is reset when a player is affected by a smaller" +
+            "explosion while still mid-air from a previous explosion. Set to false for a more casual experience.")
+    public boolean IsClimbHeightReset = true;
 
 
     // Static methods.

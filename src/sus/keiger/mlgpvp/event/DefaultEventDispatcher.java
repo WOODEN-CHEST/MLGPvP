@@ -3,6 +3,7 @@ package sus.keiger.mlgpvp.event;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import sus.keiger.plugincommon.EmptyEvent;
@@ -18,6 +19,7 @@ public class DefaultEventDispatcher implements IEventDispatcher
     private final PCPluginEvent<EntityDamageEvent> _entityDamageEvent = new PCPluginEvent<>();
     private final PCPluginEvent<PlayerDeathEvent> _playerDeathEvent = new PCPluginEvent<>();
     private final PCPluginEvent<EmptyEvent> _tickEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<PlayerBucketEmptyEvent> _playerEmptyBucketEvent = new PCPluginEvent<>();
     private final EmptyEvent _emptyEventArgs = new EmptyEvent();
 
 
@@ -64,6 +66,12 @@ public class DefaultEventDispatcher implements IEventDispatcher
         _tickEvent.FireEvent(_emptyEventArgs);
     }
 
+    @EventHandler
+    public void OnPlayerEmptyBucketEvent(PlayerBucketEmptyEvent event)
+    {
+        _playerEmptyBucketEvent.FireEvent(event);
+    }
+
 
     // Inherited methods.
     @Override
@@ -106,5 +114,11 @@ public class DefaultEventDispatcher implements IEventDispatcher
     public PCPluginEvent<EmptyEvent> GetTickEvent()
     {
         return _tickEvent;
+    }
+
+    @Override
+    public PCPluginEvent<PlayerBucketEmptyEvent> GetPlayerBucketEmptyEvent()
+    {
+        return _playerEmptyBucketEvent;
     }
 }

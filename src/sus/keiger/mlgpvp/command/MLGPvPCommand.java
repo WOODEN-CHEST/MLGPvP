@@ -5,13 +5,14 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import sus.keiger.mlgpvp.game.*;
+import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.plugincommon.ExplainedResult;
 import sus.keiger.plugincommon.command.*;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public class MLGPvPCommand extends ServerCommand
+public class MLGPvPCommand
 {
     // Static fields.
     public static final String LABEL = "mlgpvp";
@@ -35,30 +36,31 @@ public class MLGPvPCommand extends ServerCommand
     // Constructors.
     private MLGPvPCommand(IGameSessionExecutor gameSessionExecutor)
     {
-        super(LABEL, null);
         _gameSessionExecutor = Objects.requireNonNull(gameSessionExecutor, "gameSessionExecutor is null");
     }
 
 
 
     // Static methods.
-    public static ServerCommand CreteCommand(IGameSessionExecutor gameSessionExecutor)
+    public static ServerCommand CreteCommand(IGameSessionExecutor gameSessionExecutor, IServerServices services)
     {
         MLGPvPCommand Data = new MLGPvPCommand(gameSessionExecutor);
 
-        Data.AddSubNode(new KeywordNode(KEYWORD_START, Data::Start, null));
-        Data.AddSubNode(new KeywordNode(KEYWORD_CANCEL, Data::Cancel, null));
-        Data.AddSubNode(new KeywordNode(KEYWORD_RESET_SETTINGS, Data::ResetSettings, null));
+        ServerCommand Command = new ServerCommand(LABEL, null, services.GetLogger());
+
+        Command.AddSubNode(new KeywordNode(KEYWORD_START, Data::Start, null));
+        Command.AddSubNode(new KeywordNode(KEYWORD_CANCEL, Data::Cancel, null));
+        Command.AddSubNode(new KeywordNode(KEYWORD_RESET_SETTINGS, Data::ResetSettings, null));
 
         CommandNode SettingNode = new KeywordNode(KEYWORD_SETTING, Data::ShowSettings, null);
-        Data.AddSubNode(SettingNode);
+        Command.AddSubNode(SettingNode);
 
         for (Field ModifiableField : GameInstanceValues.GetModifiableFields())
         {
             SettingNode.AddSubNode(FieldToNode(Data, ModifiableField));
         }
 
-        return Data;
+        return Command;
     }
 
 
@@ -78,14 +80,18 @@ public class MLGPvPCommand extends ServerCommand
             RootNode.AddSubNode(new NumberNode(commandData -> data.SetField(commandData, field),
                     null,
                     KEY_VALUE,
-                    NumberNodeType.Integer));
+                    NumberNodeType.Integer,
+                    false,
+                    false));
         }
         else if (FieldType == GameFieldType.DoubleField)
         {
             RootNode.AddSubNode(new NumberNode(commandData -> data.SetField(commandData, field),
                     null,
                     KEY_VALUE,
-                    NumberNodeType.Double));
+                    NumberNodeType.Double,
+                    false,
+                    false));
         }
         else if (FieldType == GameFieldType.StringField)
         {

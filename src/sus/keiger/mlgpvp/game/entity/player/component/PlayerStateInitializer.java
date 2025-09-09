@@ -27,9 +27,7 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
     private static final int[] SLOT_FIRST_LEGGINGS = new int[] { PlayerFunctions.SLOT_ARMOR_LEGS };
     private static final int[] SLOT_FIRST_BOOTS = new int[] { PlayerFunctions.SLOT_ARMOR_FEET };
 
-    private static final double POWER_BOW = 1d;
     private static final boolean DOES_BOW_USE_ARROWS = false;
-    private static final double POWER_CROSSBOW = 1.75d;
     private static final boolean DOES_CROSSBOW_USE_ARROWS = true;
 
     private static final int PROTECTION_LEVEL = 2;
@@ -119,7 +117,7 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
                     .color(NamedTextColor.LIGHT_PURPLE));
             meta.addEnchant(Enchantment.INFINITY, 1, true);
         });
-        ExplosiveWeaponBuilder.SetWeaponData(Bow, POWER_BOW, DOES_BOW_USE_ARROWS);
+        ExplosiveWeaponBuilder.SetWeaponData(Bow, GetConfigValues().BowExplosionPower, DOES_BOW_USE_ARROWS);
 
         return Bow;
     }
@@ -134,7 +132,7 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
                     .color(NamedTextColor.GOLD));
             meta.addEnchant(Enchantment.MULTISHOT, 1, true);
         });
-        ExplosiveWeaponBuilder.SetWeaponData(Bow, POWER_CROSSBOW, DOES_CROSSBOW_USE_ARROWS);
+        ExplosiveWeaponBuilder.SetWeaponData(Bow, GetConfigValues().CrossbowExplosionPower, DOES_CROSSBOW_USE_ARROWS);
 
         return Bow;
     }

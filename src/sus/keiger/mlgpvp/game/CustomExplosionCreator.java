@@ -33,8 +33,8 @@ public class CustomExplosionCreator implements IExplosionCreator
     private static final float EXPLOSION_SOUND_VOLUME = 1.25f;
     private static final float EXPLOSION_SOUND_PITCH = 0.8f;
 
-    private static final double MOTION_HORIZONTAL_PER_STRENGTH = 0.75d;
-    private static final double MOTION_VERTICAL_PER_STRENGTH = 2d;
+    private static final double MOTION_HORIZONTAL_PER_STRENGTH = 1.125d;
+    private static final double MOTION_VERTICAL_PER_STRENGTH = 3d;
 
 
     // Private fields.
@@ -164,6 +164,7 @@ public class CustomExplosionCreator implements IExplosionCreator
             if (AddedMotion.getY() > 0d)
             {
                 player.MarkClimbStart();
+                player.SetYBoost(AddedMotion.getY());
             }
         });
     }
@@ -202,7 +203,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         double FinalKnockbackStrength = options.GetKnockbackScale() * options.GetStrengthScale();
 
         DestroyBlocks(TargetLocation, FinalBlockStrength);
-        //DealDamage(TargetLocation, FinalDamageStrength);
+        DealDamage(TargetLocation, FinalDamageStrength);
         DealKnockback(TargetLocation, FinalKnockbackStrength);
         CreateExplosionContent(TargetLocation, FinalBlockStrength);
     }

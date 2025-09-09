@@ -3,13 +3,14 @@ package sus.keiger.mlgpvp.game.entity.player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.entity.player.component.PlayerBukkitEventHandler;
-import sus.keiger.mlgpvp.game.entity.player.component.PlayerLifeTracker;
-import sus.keiger.mlgpvp.game.entity.player.component.PlayerMLGTracker;
-import sus.keiger.mlgpvp.game.entity.player.component.PlayerStateInitializer;
+import sus.keiger.mlgpvp.game.entity.player.component.*;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
 import sus.keiger.mlgpvp.player.IAudienceMember;
 import sus.keiger.mlgpvp.player.IServerPlayer;
@@ -17,6 +18,7 @@ import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class GamePlayerEntity extends GameEntity implements IAudienceMember
 {
@@ -27,6 +29,8 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     private final PlayerBukkitEventHandler _eventHandler;
     private final PlayerStateInitializer _stateInitializer;
     private final PlayerMLGTracker _mlgTracker;
+    private final PlayerYCoordBooster _YPosBooster;
+    private final MLGRewarder _mlgRewarder;
 
 
     // Constructors.
@@ -39,11 +43,15 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         _eventHandler = new PlayerBukkitEventHandler(this);
         _stateInitializer = new PlayerStateInitializer(this);
         _mlgTracker = new PlayerMLGTracker(this);
+        _YPosBooster = new PlayerYCoordBooster(this);
+        _mlgRewarder = new MLGRewarder(this);
 
         AddComponent(_lifeTracker);
         AddComponent(_eventHandler);
         AddComponent(_stateInitializer);
         AddComponent(_mlgTracker);
+        AddComponent(_YPosBooster);
+        AddComponent(_mlgRewarder);
     }
 
 
@@ -111,6 +119,26 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     public void MarkClimbStart()
     {
         _mlgTracker.MarkClimbStart();
+    }
+
+    public Optional<AttributeInstance> GetAttributeInstance(Attribute attribute)
+    {
+        return Optional.ofNullable(GetPlayerEntity().getAttribute(attribute));
+    }
+
+    public void SetYBoost(double amount)
+    {
+        _YPosBooster.SetRemainingYBoost(amount);
+    }
+
+    public PCPluginEvent<GamePlayerEmptyBucketEvent> GetEmptyBucketEvent()
+    {
+        return _eventHandler.GetEmptyBucketEvent();
+    }
+
+    public void RewardMLGWaterBucket(double fallDistance)
+    {
+        _mlgRewarder.RewardPlayer(fallDistance);
     }
 
 

@@ -123,6 +123,7 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
             }
             catch (Exception e)
             {
+                _services.GetLogger().severe("Exception ticking game: %s".formatted(PCString.ExceptionToString(e)));
                 CancelGame();
             }
         }

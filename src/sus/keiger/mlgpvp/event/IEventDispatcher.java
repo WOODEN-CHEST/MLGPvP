@@ -2,6 +2,7 @@ package sus.keiger.mlgpvp.event;
 
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import sus.keiger.plugincommon.EmptyEvent;
@@ -16,4 +17,5 @@ public interface IEventDispatcher extends Listener
     PCPluginEvent<EntityDamageEvent> GetEntityDamageEvent();
     PCPluginEvent<PlayerDeathEvent> GetEntityDeathEvent();
     PCPluginEvent<EmptyEvent> GetTickEvent();
+    PCPluginEvent<PlayerBucketEmptyEvent> GetPlayerBucketEmptyEvent();
 }

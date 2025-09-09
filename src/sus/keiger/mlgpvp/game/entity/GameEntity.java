@@ -2,13 +2,18 @@ package sus.keiger.mlgpvp.game.entity;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.event.IMLGPvPEventListener;
 import sus.keiger.mlgpvp.game.GameInstanceValues;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
+import sus.keiger.mlgpvp.game.entity.component.GameEntityGroundRelativityController;
+import sus.keiger.mlgpvp.game.entity.event.GameEntityLandOnGroundEvent;
+import sus.keiger.mlgpvp.game.entity.event.GameEntityLiftFromGroundEvent;
 import sus.keiger.plugincommon.ITickable;
+import sus.keiger.plugincommon.PCPluginEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +23,11 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
 {
     // Private fields.
     private final IGameInstanceExtended _gameInstance;
+    private final List<GameEntityComponent<?>> _components = new ArrayList<>();
+    private final GameEntityGroundRelativityController _groundRelativityController;
+
     private Entity _wrappedEntity;
     private boolean _isInitialized = false;
-    private final List<GameEntityComponent<?>> _components = new ArrayList<>();
 
 
 
@@ -29,6 +36,9 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
     {
         _gameInstance = Objects.requireNonNull(gameInstance, "gameInstance is null");
         SetUnderlyingEntity(wrappedEntity);
+
+        _groundRelativityController = new GameEntityGroundRelativityController(this);
+        AddComponent(_groundRelativityController);
     }
 
 
@@ -121,8 +131,25 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
         return _wrappedEntity.getFallDistance();
     }
 
+    public boolean GetIsInWater()
+    {
+        return _wrappedEntity.isInWater();
+    }
 
+    public PCPluginEvent<GameEntityLandOnGroundEvent> GetLandOnGroundEvent()
+    {
+        return  _groundRelativityController.GetLandEvent();
+    }
 
+    public PCPluginEvent<GameEntityLiftFromGroundEvent> GetLiftFromGroundEvent()
+    {
+        return _groundRelativityController.GetLiftEvent();
+    }
+
+    public BoundingBox GetBounds()
+    {
+        return _wrappedEntity.getBoundingBox();
+    }
 
 
     // Inherited methods.
