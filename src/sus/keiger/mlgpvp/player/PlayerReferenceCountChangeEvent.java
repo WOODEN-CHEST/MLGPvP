@@ -2,22 +2,11 @@ package sus.keiger.mlgpvp.player;
 
 import java.util.Objects;
 
-public class PlayerReferenceCountChangeEvent
+public class PlayerReferenceCountChangeEvent extends ServerPlayerEvent
 {
-    // Private fields.
-    private final IServerPlayer _player;
-
-
     // Constructors.
     public PlayerReferenceCountChangeEvent(IServerPlayer player)
     {
-        _player = Objects.requireNonNull(player, "player is null");
-    }
-
-
-    // Methods.
-    public IServerPlayer GetPlayer()
-    {
-        return _player;
+        super(player);
     }
 }

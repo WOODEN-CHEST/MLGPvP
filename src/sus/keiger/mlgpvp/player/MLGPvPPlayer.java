@@ -7,6 +7,8 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerQuitEvent;
+import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarContainer;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
@@ -22,16 +24,39 @@ public class MLGPvPPlayer implements IServerPlayer
     private Player _underlyingPlayer;
     private final Set<Object> _references = new HashSet<>();
     private final PCPluginEvent<PlayerReferenceCountChangeEvent> _referenceChangeEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<ServerPlayerDisconnectEvent> _disconnectEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<ServerPlayerReconnectEvent> _reconnectEvent = new PCPluginEvent<>();
     private final ActionbarContainer _actionbar = new ActionbarContainer();
+    private final IServerPlayerCollection _players;
 
 
     // Constructors.
-    public MLGPvPPlayer(Player underlyingPlayer)
+    public MLGPvPPlayer(Player underlyingPlayer, IServerPlayerCollection players)
     {
         SetUnderlyingPlayer(underlyingPlayer);
+        _players = Objects.requireNonNull(players, "players is null");
     }
 
 
+    // Private methods.
+    private void OnPlayerQuitEvent(PlayerQuitEvent event)
+    {
+        if (event.getPlayer() == GetUnderlyingPlayer())
+        {
+            _disconnectEvent.FireEvent(new ServerPlayerDisconnectEvent(this));
+        }
+    }
+
+    private void OnPlayerAddEvent(PlayerCollectionAddEvent event)
+    {
+        if (event.GetPlayer() == this)
+        {
+            _reconnectEvent.FireEvent(new ServerPlayerReconnectEvent(this));
+        }
+    }
+
+
+    // Inherited methods.
     @Override
     public Player GetUnderlyingPlayer()
     {
@@ -92,6 +117,18 @@ public class MLGPvPPlayer implements IServerPlayer
     public PCPluginEvent<PlayerReferenceCountChangeEvent> GetReferenceCountChangeEvent()
     {
         return _referenceChangeEvent;
+    }
+
+    @Override
+    public PCPluginEvent<ServerPlayerDisconnectEvent> GetDisconnectEvent()
+    {
+        return _disconnectEvent;
+    }
+
+    @Override
+    public PCPluginEvent<ServerPlayerReconnectEvent> GetReconnectEvent()
+    {
+        return _reconnectEvent;
     }
 
     @Override
@@ -169,5 +206,19 @@ public class MLGPvPPlayer implements IServerPlayer
     public void Tick()
     {
         _actionbar.Tick(_underlyingPlayer); // This may mess with other plugins which use the actionbar :/
+    }
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        dispatcher.GetQuitEvent().Subscribe(this, this::OnPlayerQuitEvent);
+        _players.GetAddEvent().Subscribe(this, this::OnPlayerAddEvent);
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        dispatcher.GetQuitEvent().Unsubscribe(this);
+        _players.GetAddEvent().Unsubscribe(this);
     }
 }

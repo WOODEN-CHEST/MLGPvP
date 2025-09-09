@@ -15,11 +15,6 @@ public class GamePlayerStateEnsurer extends GameComponent<MLGPvPGameInstance>
 
 
     // Private methods.
-    private void SpawnPlayer()
-    {
-
-    }
-
     private void OnGameStartEvent(GameInstanceStartEvent event)
     {
         GetGameInstance().GetOnlinePlayers().forEach(player ->

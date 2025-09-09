@@ -29,7 +29,7 @@ public class PlayerExistenceController implements IMLGPvPEventListener
         IServerPlayer TargetPlayer = _services.GetPlayerCollection().GetPlayer(event.getPlayer())
                 .orElseGet(() ->
                 {
-                    IServerPlayer Player = new MLGPvPPlayer(event.getPlayer());
+                    IServerPlayer Player = new MLGPvPPlayer(event.getPlayer(), _services.GetPlayerCollection());
                     Player.GetReferenceCountChangeEvent().Subscribe(this, this::OnPlayerReferenceCountChangeEvent);
                     return Player;
                 });
@@ -64,7 +64,7 @@ public class PlayerExistenceController implements IMLGPvPEventListener
     public void SubscribeToEvents(IEventDispatcher dispatcher)
     {
         dispatcher.GetJoinEvent().Subscribe(this, this::OnPlayerJoinEvent);
-        dispatcher.GetQuitEvent().Subscribe(this, this::OnPlayerQuitEvent);
+        dispatcher.GetQuitEvent().Subscribe(this, this::OnPlayerQuitEvent, Integer.MIN_VALUE);
     }
 
     @Override

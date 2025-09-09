@@ -30,6 +30,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     private final PlayerMLGTracker _mlgTracker;
     private final PlayerYCoordBooster _YPosBooster;
     private final MLGRewarder _mlgRewarder;
+    private final AdvancementFilter _advancementFilter;
 
 
     // Constructors.
@@ -44,6 +45,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         _mlgTracker = new PlayerMLGTracker(this);
         _YPosBooster = new PlayerYCoordBooster(this);
         _mlgRewarder = new MLGRewarder(this);
+        _advancementFilter = new AdvancementFilter(this);
 
         AddComponent(_lifeTracker);
         AddComponent(_eventHandler);
@@ -51,6 +53,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         AddComponent(_mlgTracker);
         AddComponent(_YPosBooster);
         AddComponent(_mlgRewarder);
+        AddComponent(_advancementFilter);
     }
 
 

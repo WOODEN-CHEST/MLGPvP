@@ -37,6 +37,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GamePlayerCollection _players;
     private final GameLocation _location;
     private final GamePlayerStateEnsurer _playerStateEnsurer;
+    private final GameFlowExecutor _flowExecutor;
 
 
     // Constructors.
@@ -51,18 +52,15 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _players = new GamePlayerCollection(this);
         _location = new GameLocation(this);
         _playerStateEnsurer = new GamePlayerStateEnsurer(this);
+        _flowExecutor = new GameFlowExecutor(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
         AddComponent(_players);
         AddComponent(_location);
         AddComponent(_playerStateEnsurer);
+        AddComponent(_flowExecutor);
     }
-
-
-
-    // Private methods.
-
 
 
     // Methods.

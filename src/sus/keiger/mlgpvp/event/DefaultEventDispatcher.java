@@ -1,5 +1,6 @@
 package sus.keiger.mlgpvp.event;
 
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.*;
@@ -20,6 +21,7 @@ public class DefaultEventDispatcher implements IEventDispatcher
     private final PCPluginEvent<PlayerDeathEvent> _playerDeathEvent = new PCPluginEvent<>();
     private final PCPluginEvent<EmptyEvent> _tickEvent = new PCPluginEvent<>();
     private final PCPluginEvent<PlayerBucketEmptyEvent> _playerEmptyBucketEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<PlayerAdvancementCriterionGrantEvent> _criteriaGrantEvent = new PCPluginEvent<>();
     private final EmptyEvent _emptyEventArgs = new EmptyEvent();
 
 
@@ -72,6 +74,13 @@ public class DefaultEventDispatcher implements IEventDispatcher
         _playerEmptyBucketEvent.FireEvent(event);
     }
 
+    @EventHandler
+    public void OnAdvancementCriteriaGrantEvent(PlayerAdvancementCriterionGrantEvent event)
+    {
+        _criteriaGrantEvent.FireEvent(event);
+    }
+
+
 
     // Inherited methods.
     @Override
@@ -120,5 +129,11 @@ public class DefaultEventDispatcher implements IEventDispatcher
     public PCPluginEvent<PlayerBucketEmptyEvent> GetPlayerBucketEmptyEvent()
     {
         return _playerEmptyBucketEvent;
+    }
+
+    @Override
+    public PCPluginEvent<PlayerAdvancementCriterionGrantEvent> GetAdvancementCriteriaGrantEvent()
+    {
+        return _criteriaGrantEvent;
     }
 }

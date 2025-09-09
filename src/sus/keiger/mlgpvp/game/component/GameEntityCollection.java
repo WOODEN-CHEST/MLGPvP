@@ -6,7 +6,10 @@ import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
+import sus.keiger.mlgpvp.player.ServerPlayerDisconnectEvent;
+import sus.keiger.mlgpvp.player.ServerPlayerReconnectEvent;
 import sus.keiger.plugincommon.ITickable;
 
 import java.util.*;
@@ -91,9 +94,28 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         _entitiesCopy = List.copyOf(_entities.values());
     }
 
+    private void OnGameStartEvent(GameInstanceStartEvent event)
+    {
+        GetGameInstance().GetJoinedPlayers().forEach(player ->
+        {
+            player.GetReconnectEvent().Subscribe(this, this::OnPlayerReconnectEvent);
+            player.GetDisconnectEvent().Subscribe(this, this::OnPlayerDisconnectEvent);
+        });
+    }
+
     private void OnGameCompleteEvent(GameInstanceCompleteEvent event)
     {
         _entitiesCopy.forEach(this::RemoveEntity);
+    }
+
+    private void OnPlayerDisconnectEvent(ServerPlayerDisconnectEvent event)
+    {
+        GetEntity(event.GetPlayer().GetUnderlyingPlayer()).ifPresent(this::RemoveEntity);
+    }
+
+    private void OnPlayerReconnectEvent(ServerPlayerReconnectEvent event)
+    {
+        TryReAddPlayer(event.GetPlayer());
     }
 
 
@@ -113,6 +135,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         super.SubscribeToEvents(dispatcher);
 
         GetGameInstance().GetCompleteEvent().Subscribe(this, this::OnGameCompleteEvent);
+        GetGameInstance().GetStartEvent().Subscribe(this, this::OnGameStartEvent);
     }
 
     @Override
@@ -121,5 +144,12 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         super.UnsubscribeFromEvents(dispatcher);
 
         GetGameInstance().GetCompleteEvent().Unsubscribe(this);
+        GetGameInstance().GetStartEvent().Unsubscribe(this);
+
+        GetGameInstance().GetJoinedPlayers().forEach(player ->
+        {
+            player.GetDisconnectEvent().Unsubscribe(this);
+            player.GetReconnectEvent().Unsubscribe(this);
+        });
     }
 }

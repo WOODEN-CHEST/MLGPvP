@@ -31,7 +31,7 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
             return;
         }
 
-        event.setKeepInventory(true);
+        event.setCancelled(true);
         SetIsAlive(false);
     }
 

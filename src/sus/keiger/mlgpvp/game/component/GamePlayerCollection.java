@@ -4,6 +4,7 @@ import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.GameInstanceState;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 
@@ -101,18 +102,25 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
     private void OnSwitchToInGameState(GameInstanceStartEvent event)
     {
         _startingPlayerCount = GetJoinedPlayerCount();
+        _players.keySet().forEach(player -> player.AddReference(this));
+    }
+
+    private void OnSwitchToCompleteState(GameInstanceCompleteEvent event)
+    {
+        _startingPlayerCount = GetJoinedPlayerCount();
+        _players.keySet().forEach(player -> player.RemoveReference(this));
     }
 
 
+
     // Inherited methods.
-
-
     @Override
     public void SubscribeToEvents(IEventDispatcher dispatcher)
     {
         super.SubscribeToEvents(dispatcher);
 
         GetGameInstance().GetStartEvent().Subscribe(this, this::OnSwitchToInGameState);
+        GetGameInstance().GetCompleteEvent().Subscribe(this, this::OnSwitchToCompleteState);
     }
 
     @Override
@@ -121,6 +129,7 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
         super.UnsubscribeFromEvents(dispatcher);
 
         GetGameInstance().GetStartEvent().Unsubscribe(this);
+        GetGameInstance().GetCompleteEvent().Unsubscribe(this);
     }
 
     // Types/

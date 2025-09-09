@@ -36,19 +36,10 @@ public class DefaultPlayerStateController implements IPlayerStateController
             {
                 _sessionExecutor.GetCurrentGameInstance().AddSpectator(event.GetPlayer());
             }
-            else
-            {
-                _sessionExecutor.GetCurrentGameInstance().AddPlayer(event.GetPlayer());
-            }
         }
     }
 
     private void OnPlayerRemoveEvent(PlayerCollectionRemoveEvent event) { }
-
-    private void OnGameCompleteEvent(GameInstanceCompleteEvent event)
-    {
-
-    }
 
 
     // Inherited methods.

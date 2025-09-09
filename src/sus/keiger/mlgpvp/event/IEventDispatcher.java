@@ -1,5 +1,6 @@
 package sus.keiger.mlgpvp.event;
 
+import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -18,4 +19,5 @@ public interface IEventDispatcher extends Listener
     PCPluginEvent<PlayerDeathEvent> GetEntityDeathEvent();
     PCPluginEvent<EmptyEvent> GetTickEvent();
     PCPluginEvent<PlayerBucketEmptyEvent> GetPlayerBucketEmptyEvent();
+    PCPluginEvent<PlayerAdvancementCriterionGrantEvent> GetAdvancementCriteriaGrantEvent();
 }
