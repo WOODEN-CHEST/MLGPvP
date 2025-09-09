@@ -101,6 +101,7 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
         List<PlayerEndData> AllPlayerData = GetPlayersSortedByScoreAscending();
         for (PlayerEndData PlayerData : AllPlayerData)
         {
+            Builder.append(Component.text("%s:".formatted(PlayerData.Player.GetName())).color(NamedTextColor.WHITE));
             AppendPlayerStats(AllPlayerData, PlayerData, Builder);
             Builder.append(Component.newline());
         }
@@ -144,6 +145,9 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
 
         AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetWaterBucketsFailed(),
                 DIRECTION_LOWER_BETTER, "MLGs Failed", Colors.GetColor());
+
+        AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Score,
+                DIRECTION_HIGHER_BETTER, "Final Score", Colors.GetColor());
     }
 
     private void AppendSingleStat(List<PlayerEndData> allPlayerData,
@@ -174,7 +178,7 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
                 statDirection);
 
         builder.append(Component.newline());
-        builder.append(Component.text("%s: %s (#%d)".formatted(statName, StringValue, Rank)).color(color));
+        builder.append(Component.text("    %s: %s (#%d)".formatted(statName, StringValue, Rank)).color(color));
     }
 
     private void ShowTitles(IServerPlayer winner)

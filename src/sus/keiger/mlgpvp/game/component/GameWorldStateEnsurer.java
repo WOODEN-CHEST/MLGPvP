@@ -1,14 +1,12 @@
 package sus.keiger.mlgpvp.game.component;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.GameInstanceState;
 import sus.keiger.mlgpvp.game.MLGPvPGameInstance;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
+import sus.keiger.plugincommon.TickClock;
 
 import java.util.Objects;
 import java.util.Optional;

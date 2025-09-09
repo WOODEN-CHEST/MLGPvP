@@ -100,6 +100,7 @@ public class ServerContext
 
     private void DeinitializeObjects()
     {
+        _gameSessionExecutor.CancelGame();
         _playerExistenceController.UnsubscribeFromEvents(_services.GetEventDispatcher());
         _gameSessionExecutor.UnsubscribeFromEvents(_services.GetEventDispatcher());
         _playerStateController.UnsubscribeFromEvents(_services.GetEventDispatcher());

@@ -115,11 +115,7 @@ public class MLGPvPCommand
     {
         _gameSessionExecutor.GetCurrentGameInstance().SetCenterLocation(data.GetLocation());
         ExplainedResult StartResult = _gameSessionExecutor.StartGame();
-        if (StartResult.IsSuccessful())
-        {
-            data.SetFeedback("Started game");
-        }
-        else
+        if (!StartResult.IsSuccessful())
         {
             data.SetStatus(CommandStatus.Unsuccessful);
             data.SetFeedback("Couldn't start game, reason: %s".formatted(StartResult.GetMessage()));

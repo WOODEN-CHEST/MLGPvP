@@ -10,9 +10,7 @@ import org.bukkit.entity.Entity;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.component.*;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
-import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
+import sus.keiger.mlgpvp.game.event.*;
 import sus.keiger.mlgpvp.player.IAudienceMember;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.mlgpvp.service.IServerServices;
@@ -38,6 +36,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GameLocation _location;
     private final GamePlayerStateEnsurer _playerStateEnsurer;
     private final GameFlowExecutor _flowExecutor;
+    private final GameBorderManager _borderManager;
 
 
     // Constructors.
@@ -53,6 +52,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _location = new GameLocation(this);
         _playerStateEnsurer = new GamePlayerStateEnsurer(this);
         _flowExecutor = new GameFlowExecutor(this);
+        _borderManager = new GameBorderManager(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
@@ -60,6 +60,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         AddComponent(_location);
         AddComponent(_playerStateEnsurer);
         AddComponent(_flowExecutor);
+        AddComponent(_borderManager);
     }
 
 
@@ -134,7 +135,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public int GetStartingPlayerCount()
     {
-        return 0;
+        return _players.GetStartingPlayerCount();
     }
 
     @Override
@@ -358,5 +359,17 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
     {
         _components.forEach(component -> component.UnsubscribeFromEvents(dispatcher));
+    }
+
+    @Override
+    public PCPluginEvent<GameInstanceEntityAddEvent> GetEntityAddEvent()
+    {
+        return _entities.GetEntityAddEvent();
+    }
+
+    @Override
+    public PCPluginEvent<GameInstanceEntityRemoveEvent> GetEntityRemoveEvent()
+    {
+        return _entities.GetEntityRemoveEvent();
     }
 }

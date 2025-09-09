@@ -1,16 +1,20 @@
 package sus.keiger.mlgpvp.game.component;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceEntityAddEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceEntityRemoveEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.mlgpvp.player.ServerPlayerDisconnectEvent;
 import sus.keiger.mlgpvp.player.ServerPlayerReconnectEvent;
 import sus.keiger.plugincommon.ITickable;
+import sus.keiger.plugincommon.PCPluginEvent;
 
 import java.util.*;
 
@@ -20,6 +24,8 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
     private final Map<Entity, GameEntity> _entities = new HashMap<>();
     private List<GameEntity> _entitiesCopy = Collections.emptyList();
     private final Map<IServerPlayer, GamePlayerEntity> _playerEntities = new HashMap<>();
+    private final PCPluginEvent<GameInstanceEntityAddEvent> _entityAddEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GameInstanceEntityRemoveEvent> _entityRemoveEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -49,15 +55,21 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
 
         UpdateEntityList();
         entity.SubscribeToEvents(GetServices().GetEventDispatcher());
+
+        GetGameInstance().GetEntityAddEvent().FireEvent(new GameInstanceEntityAddEvent(GetGameInstance(), entity));
     }
 
     public void RemoveEntity(GameEntity entity)
     {
-        _entities.remove(Objects.requireNonNull(entity, "entity is null").GetUnderlyingEntity());
-        entity.Delete();
-        entity.RemoveCleanup();
+        GameEntity Entity = Objects.requireNonNull(entity, "entity is null");
+        _entities.remove(Entity.GetUnderlyingEntity());
         UpdateEntityList();
-        entity.UnsubscribeFromEvents(GetServices().GetEventDispatcher());
+
+        GetGameInstance().GetEntityRemoveEvent().FireEvent(new GameInstanceEntityRemoveEvent(GetGameInstance(), Entity));
+
+        Entity.RemoveCleanup();
+        Entity.UnsubscribeFromEvents(GetServices().GetEventDispatcher());
+        Entity.Delete();
     }
 
     public Optional<GameEntity> GetEntity(Entity bukkitEntity)
@@ -116,6 +128,16 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
     private void OnPlayerReconnectEvent(ServerPlayerReconnectEvent event)
     {
         TryReAddPlayer(event.GetPlayer());
+    }
+
+    public PCPluginEvent<GameInstanceEntityAddEvent> GetEntityAddEvent()
+    {
+        return _entityAddEvent;
+    }
+
+    public PCPluginEvent<GameInstanceEntityRemoveEvent> GetEntityRemoveEvent()
+    {
+        return _entityRemoveEvent;
     }
 
 

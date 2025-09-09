@@ -6,6 +6,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
@@ -31,6 +32,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     private final PlayerYCoordBooster _YPosBooster;
     private final MLGRewarder _mlgRewarder;
     private final AdvancementFilter _advancementFilter;
+    private final PlayerStatTracker _statTracker;
 
 
     // Constructors.
@@ -46,6 +48,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         _YPosBooster = new PlayerYCoordBooster(this);
         _mlgRewarder = new MLGRewarder(this);
         _advancementFilter = new AdvancementFilter(this);
+        _statTracker = new PlayerStatTracker(this);
 
         AddComponent(_lifeTracker);
         AddComponent(_eventHandler);
@@ -54,6 +57,7 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         AddComponent(_YPosBooster);
         AddComponent(_mlgRewarder);
         AddComponent(_advancementFilter);
+        AddComponent(_statTracker);
     }
 
 
@@ -166,6 +170,11 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     public PCPluginEvent<GamePlayerTakeDamageEvent> GetDamageTakeEvent()
     {
         return _eventHandler.GetDamageTakeEvent();
+    }
+
+    public void SetScoreboard(Scoreboard scoreboard)
+    {
+        GetPlayerEntity().setScoreboard(scoreboard);
     }
 
 
