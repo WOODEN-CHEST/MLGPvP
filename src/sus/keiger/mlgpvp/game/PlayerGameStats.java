@@ -6,14 +6,12 @@ public class PlayerGameStats
     private double _distanceClimbed = 0d;
     private double _distanceFallen = 0d;
     private double _highestClimb = 0d;
-    private long _shotsFired = 0L;
     private long _arrowsFired = 0L;
-    private long _arrowsExploded = 0L;
     private long _directHits = 0L;
     private double _damageTaken = 0d;
     private double _damageDealt = 0d;
-    private long _fallDamageCount = 0;
     private long _waterBucketsLanded = 0;
+    private long _waterBucketsFailed = 0;
 
 
     // Methods.
@@ -39,16 +37,6 @@ public class PlayerGameStats
         return _distanceFallen;
     }
 
-    public void SetShotsFired(long value)
-    {
-        _shotsFired = Math.max(0L, value);
-    }
-
-    public long GetShotsFired()
-    {
-        return _shotsFired;
-    }
-
     public void SetArrowsFired(long value)
     {
         _arrowsFired = Math.max(0L, value);
@@ -57,16 +45,6 @@ public class PlayerGameStats
     public long GetArrowsFired()
     {
         return _arrowsFired;
-    }
-
-    public void SetArrowsExploded(long value)
-    {
-        _arrowsExploded = Math.max(0L, value);
-    }
-
-    public long GetArrowsExploded()
-    {
-        return _arrowsExploded;
     }
 
     public void SetDirectHits(long value)
@@ -101,14 +79,14 @@ public class PlayerGameStats
         return _damageDealt;
     }
 
-    public void SetFallDamageCount(long value)
+    public void SetWaterBucketsFailed(long value)
     {
-        _fallDamageCount = Math.max(0L, value);
+        _waterBucketsFailed = Math.max(0L, value);
     }
 
-    public long GetFallDamageCount()
+    public long GetWaterBucketsFailed()
     {
-        return _fallDamageCount;
+        return _waterBucketsFailed;
     }
 
     public void SetWaterBucketsLanded(long value)

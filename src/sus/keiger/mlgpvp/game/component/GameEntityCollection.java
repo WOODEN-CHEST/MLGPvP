@@ -57,6 +57,11 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
         entity.UnsubscribeFromEvents(GetServices().GetEventDispatcher());
     }
 
+    public Optional<GameEntity> GetEntity(Entity bukkitEntity)
+    {
+        return Optional.ofNullable(_entities.get(bukkitEntity));
+    }
+
     public List<GameEntity> GetEntities()
     {
         return _entitiesCopy;

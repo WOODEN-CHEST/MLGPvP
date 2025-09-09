@@ -1,6 +1,7 @@
 package sus.keiger.mlgpvp.game.entity.event;
 
 import org.bukkit.event.Cancellable;
+import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 
@@ -33,5 +34,10 @@ public class GameEntityEvent
         {
             _event.setCancelled(value);
         }
+    }
+
+    public IGameInstanceExtended GetGameInstance()
+    {
+        return GetEntity().GetGameInstance();
     }
 }

@@ -1,8 +1,10 @@
 package sus.keiger.mlgpvp.game.component;
 
+import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.GameInstanceState;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
+import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 
 import java.util.*;
@@ -12,6 +14,7 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
     // Private fields.
     private final Map<IServerPlayer, GamePlayer> _players = new HashMap<>();
     private List<IServerPlayer> _onlinePlayers = Collections.emptyList();
+    private int _startingPlayerCount = 0;
 
 
     // Constructors.
@@ -83,6 +86,11 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
                 .map(gamePlayer -> gamePlayer.Stats);
     }
 
+    public int GetStartingPlayerCount()
+    {
+        return GetGameInstance().GetState() != GameInstanceState.Lobby ? _startingPlayerCount : GetJoinedPlayerCount();
+    }
+
 
     // Private methods.
     private void UpdateOnlinePlayerList()
@@ -90,8 +98,32 @@ public class GamePlayerCollection extends GameComponent<IGameInstanceExtended>
          _onlinePlayers = _players.keySet().stream().filter(IServerPlayer::GetIsOnline).toList();
     }
 
+    private void OnSwitchToInGameState(GameInstanceStartEvent event)
+    {
+        _startingPlayerCount = GetJoinedPlayerCount();
+    }
 
-    // Classes
+
+    // Inherited methods.
+
+
+    @Override
+    public void SubscribeToEvents(IEventDispatcher dispatcher)
+    {
+        super.SubscribeToEvents(dispatcher);
+
+        GetGameInstance().GetStartEvent().Subscribe(this, this::OnSwitchToInGameState);
+    }
+
+    @Override
+    public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
+    {
+        super.UnsubscribeFromEvents(dispatcher);
+
+        GetGameInstance().GetStartEvent().Unsubscribe(this);
+    }
+
+    // Types/
     private static class GamePlayer
     {
         // Fields.

@@ -1,6 +1,7 @@
 package sus.keiger.mlgpvp.game.entity.player.component;
 
 import org.bukkit.entity.Arrow;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
@@ -9,6 +10,8 @@ import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFireArrowEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerTakeDamageEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
 
 
@@ -16,6 +19,8 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
 {
     // Private fields.
     private final PCPluginEvent<GamePlayerEmptyBucketEvent> _emptyBucketEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerFireArrowEvent> _fireArrowEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerTakeDamageEvent> _takeDamageEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -29,6 +34,16 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
     public PCPluginEvent<GamePlayerEmptyBucketEvent> GetEmptyBucketEvent()
     {
         return _emptyBucketEvent;
+    }
+
+    public PCPluginEvent<GamePlayerFireArrowEvent> GetFireArrowEvent()
+    {
+        return _fireArrowEvent;
+    }
+
+    public PCPluginEvent<GamePlayerTakeDamageEvent> GetDamageTakeEvent()
+    {
+        return _takeDamageEvent;
     }
 
 
@@ -49,6 +64,8 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
                     GetEntity(),
                     stats.StrengthScale());
             GetGameInstance().AddEntity(SpawnedEntity);
+
+            _fireArrowEvent.FireEvent(new GamePlayerFireArrowEvent(GetEntity(), SpawnedEntity));
         });
     }
 
@@ -62,6 +79,16 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         _emptyBucketEvent.FireEvent(new GamePlayerEmptyBucketEvent(GetEntity(), event));
     }
 
+    private void OnEntityDamageEvent(EntityDamageEvent event)
+    {
+        if (!event.getEntity().equals(GetEntity().GetUnderlyingEntity()))
+        {
+            return;
+        }
+
+        _takeDamageEvent.FireEvent(new GamePlayerTakeDamageEvent(GetEntity(), event));
+    }
+
 
     // Inherited methods.
     @Override
@@ -71,6 +98,7 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
 
         dispatcher.GetShootBowEvent().Subscribe(this, this::OnEntityShootBowEvent);
         dispatcher.GetPlayerBucketEmptyEvent().Subscribe(this, this::OnEmptyBucketEvent);
+        dispatcher.GetEntityDamageEvent().Subscribe(this, this::OnEntityDamageEvent);
     }
 
     @Override
@@ -80,5 +108,6 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
 
         dispatcher.GetShootBowEvent().Unsubscribe(this);
         dispatcher.GetPlayerBucketEmptyEvent().Unsubscribe(this);
+        dispatcher.GetEntityDamageEvent().Unsubscribe(this);
     }
 }

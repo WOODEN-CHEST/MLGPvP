@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.entity.Entity;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.component.*;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
@@ -91,6 +92,12 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     }
 
     @Override
+    public Optional<GameEntity> GetEntity(Entity bukkitEntity)
+    {
+        return _entities.GetEntity(bukkitEntity);
+    }
+
+    @Override
     public List<GameEntity> GetEntities()
     {
         return _entities.GetEntities();
@@ -127,9 +134,15 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     }
 
     @Override
+    public int GetStartingPlayerCount()
+    {
+        return 0;
+    }
+
+    @Override
     public Optional<PlayerGameStats> GetPlayerStats(IServerPlayer player)
     {
-        return Optional.empty();
+        return _players.GetPlayerStats(player);
     }
 
     @Override

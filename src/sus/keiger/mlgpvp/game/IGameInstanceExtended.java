@@ -1,5 +1,6 @@
 package sus.keiger.mlgpvp.game;
 
+import org.bukkit.entity.Entity;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.event.GameInstanceTickEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
@@ -13,6 +14,7 @@ public interface IGameInstanceExtended extends IGameInstance
 {
     void AddEntity(GameEntity entity);
     void RemoveEntity(GameEntity entity);
+    Optional<GameEntity> GetEntity(Entity bukkitEntity);
     List<GameEntity> GetEntities();
     int GetEntityCount();
 
@@ -22,6 +24,7 @@ public interface IGameInstanceExtended extends IGameInstance
     void SwitchToCompleteState();
 
     boolean TryReAddPlayer(IServerPlayer player);
+    int GetStartingPlayerCount();
 
     Optional<PlayerGameStats> GetPlayerStats(IServerPlayer player);
 

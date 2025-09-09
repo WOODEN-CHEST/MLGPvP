@@ -3,7 +3,6 @@ package sus.keiger.mlgpvp.game.entity.player;
 import io.papermc.paper.persistence.PersistentDataContainerView;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import sus.keiger.mlgpvp.MLGPvPPlugin;
 import sus.keiger.plugincommon.item.ItemFunctions;

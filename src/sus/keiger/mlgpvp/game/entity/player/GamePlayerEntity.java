@@ -10,8 +10,7 @@ import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.component.*;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.*;
 import sus.keiger.mlgpvp.player.IAudienceMember;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.plugincommon.PCPluginEvent;
@@ -140,6 +139,32 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
     {
         _mlgRewarder.RewardPlayer(fallDistance);
     }
+
+    public PCPluginEvent<GamePlayerFireArrowEvent> GetFireArrowEvent()
+    {
+        return _eventHandler.GetFireArrowEvent();
+    }
+
+    public PCPluginEvent<GamePlayerClimbEndEvent> GetClimbEndEvent()
+    {
+        return _mlgTracker.GetClimbEndEvent();
+    }
+
+    public PCPluginEvent<GamePlayerLandMLGEvent> GetLandMLGEvent()
+    {
+        return _mlgTracker.GetLandMLGEvent();
+    }
+
+    public PCPluginEvent<GamePlayerFailMLGEvent> GetFailMLGEvent()
+    {
+        return _mlgTracker.GetFailMLGEvent();
+    }
+
+    public PCPluginEvent<GamePlayerTakeDamageEvent> GetDamageTakeEvent()
+    {
+        return _eventHandler.GetDamageTakeEvent();
+    }
+
 
 
     // Inherited methods.

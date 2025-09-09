@@ -16,8 +16,12 @@ import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.event.GameEntityLandOnGroundEvent;
 import sus.keiger.mlgpvp.game.entity.event.GameEntityLiftFromGroundEvent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerClimbEndEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFailMLGEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerLandMLGEvent;
 import sus.keiger.plugincommon.PCMath;
+import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
 import java.text.NumberFormat;
@@ -49,6 +53,10 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
     private boolean _isOnGround = true;
     private double _highestReachedYCoordSinceLift;
 
+    private final PCPluginEvent<GamePlayerClimbEndEvent> _climbEndEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerLandMLGEvent> _landMLGEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerFailMLGEvent> _failMLGEvent = new PCPluginEvent<>();
+
 
 
 
@@ -78,6 +86,20 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         _currentClimb = new MLGPvPClimb(GetEntity().GetLocation().getY(), CLIMB_START_GRACE_DURATION_TICKS);
         _climbBossBar.addViewer(GetEntity().GetPlayerEntity());
         UpdateBossBar();
+    }
+    public PCPluginEvent<GamePlayerClimbEndEvent> GetClimbEndEvent()
+    {
+        return _climbEndEvent;
+    }
+
+    public PCPluginEvent<GamePlayerLandMLGEvent> GetLandMLGEvent()
+    {
+        return _landMLGEvent;
+    }
+
+    public PCPluginEvent<GamePlayerFailMLGEvent> GetFailMLGEvent()
+    {
+        return _failMLGEvent;
     }
 
 
@@ -111,7 +133,8 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         }
 
         int CurrentGraceTicks = _currentClimb.GraceTicks;
-        if (((GetEntity().GetFallDistance() > 0f) || GetEntity().GetIsInWater()) && (CurrentGraceTicks <= 0))
+        if (((GetEntity().GetFallDistance() > 0f) || GetEntity().GetIsInWater() || _isOnGround)
+                && (CurrentGraceTicks <= 0))
         {
             MarkClimbEnd();
             return;
@@ -150,14 +173,17 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
                         .color(NamedTextColor.GREEN),
                 _actionbarID));
 
-        _climbBossBar.removeViewer(GetEntity().GetPlayerEntity());
-
         _currentFall = new MLGPvPFall(_currentClimb.PreviousYPosition);
+        _climbEndEvent.FireEvent(new GamePlayerClimbEndEvent(GetEntity(),
+                _currentClimb.StartYPosition,
+                _currentFall.StartYPosition));
         _currentClimb = null;
+
 
         /* Basically, the bossbar has a 1-tick interpolation animation on the client, so I update it here so
         * that when it pops up again in the future, the animation doesn't show the previous value. */
         UpdateBossBar();
+        _climbBossBar.removeViewer(GetEntity().GetPlayerEntity());
     }
 
     private void UpdateBossBar()
@@ -259,6 +285,8 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
                 PITCH);
 
         GetEntity().RewardMLGWaterBucket(fallDistance);
+
+        _landMLGEvent.FireEvent(new GamePlayerLandMLGEvent(GetEntity(), fallDistance));
     }
 
     private void OnFailedMLGWaterBucket(double fallDistance)
@@ -266,6 +294,8 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().ShowActionbar(new ActionbarMessage(ACTIONBAR_DURATION_TICKS,
                 Component.text("MLG failed").color(NamedTextColor.RED),
                 _actionbarID));
+
+        _failMLGEvent.FireEvent(new GamePlayerFailMLGEvent(GetEntity(), fallDistance));
     }
 
 
