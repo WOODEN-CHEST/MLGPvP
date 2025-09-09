@@ -15,8 +15,9 @@ import java.util.Optional;
 public class GameFlowExecutor extends GameComponent<MLGPvPGameInstance>
 {
     // Private fields.
-    private int _alivePlayerCount = 0;
     private final GameEndContentDisplayer _endContentDisplayer;
+
+    private int _alivePlayerCount = 0;
 
 
 

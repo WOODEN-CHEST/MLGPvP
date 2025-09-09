@@ -41,13 +41,13 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         super(gameInstance, Objects.requireNonNull(serverPlayer, "serverPlayer is null").GetUnderlyingPlayer());
         _serverPlayer = serverPlayer;
 
+        _advancementFilter = new AdvancementFilter(this);
         _lifeTracker = new PlayerLifeTracker(this);
         _eventHandler = new PlayerBukkitEventHandler(this);
         _stateInitializer = new PlayerStateInitializer(this);
         _mlgTracker = new PlayerMLGTracker(this);
         _YPosBooster = new PlayerYCoordBooster(this);
         _mlgRewarder = new MLGRewarder(this);
-        _advancementFilter = new AdvancementFilter(this);
         _statTracker = new PlayerStatTracker(this);
 
         AddComponent(_lifeTracker);

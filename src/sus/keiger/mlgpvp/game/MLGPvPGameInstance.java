@@ -37,6 +37,8 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GamePlayerStateEnsurer _playerStateEnsurer;
     private final GameFlowExecutor _flowExecutor;
     private final GameBorderManager _borderManager;
+    private final GameDeathMatchExecutor _deathMatchExecutor;
+    private final GameDisplayBoard _displayBoard;
 
 
     // Constructors.
@@ -53,6 +55,8 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _playerStateEnsurer = new GamePlayerStateEnsurer(this);
         _flowExecutor = new GameFlowExecutor(this);
         _borderManager = new GameBorderManager(this);
+        _deathMatchExecutor = new GameDeathMatchExecutor(this);
+        _displayBoard = new GameDisplayBoard(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
@@ -61,6 +65,8 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         AddComponent(_playerStateEnsurer);
         AddComponent(_flowExecutor);
         AddComponent(_borderManager);
+        AddComponent(_deathMatchExecutor);
+        AddComponent(_displayBoard);
     }
 
 
@@ -136,6 +142,18 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     public int GetStartingPlayerCount()
     {
         return _players.GetStartingPlayerCount();
+    }
+
+    @Override
+    public int GetTicksRemainingUntilDeathmatch()
+    {
+        return _deathMatchExecutor.GetTicksUntilDeathmatch();
+    }
+
+    @Override
+    public int GetTicksRemainingUntilBorderShrink()
+    {
+        return _borderManager.GetTicksUntilShrink();
     }
 
     @Override

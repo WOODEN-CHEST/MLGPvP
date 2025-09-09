@@ -8,9 +8,13 @@ import org.bukkit.scoreboard.*;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.MLGPvPGameInstance;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceEntityAddEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceEntityRemoveEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
+import sus.keiger.mlgpvp.player.IServerPlayer;
 import sus.keiger.plugincommon.PCMath;
+import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.TickClock;
 
 import java.util.ArrayList;
@@ -117,19 +121,26 @@ public class GameDisplayBoard extends GameComponent<MLGPvPGameInstance>
 
         int TicksUntilDeathmatch = GetGameInstance().GetTicksRemainingUntilDeathmatch();
         int TicksUntilBorderShrink = GetGameInstance().GetTicksRemainingUntilBorderShrink();
-        TextColor DeathmatchColor = NamedTextColor.DARK_GREEN;
-        TextColor BorderColor = NamedTextColor.DARK_PURPLE;
+        TextColor DeathmatchColor = NamedTextColor.GREEN;
+        TextColor BorderColor = NamedTextColor.LIGHT_PURPLE;
 
-
-        Lines.add(Component.text("Until Deathmatch:").color(DeathmatchColor));
-        Lines.add(Component.text(FormatTime(TicksUntilDeathmatch)).color(DeathmatchColor));
-
-        Lines.add(Component.empty());
-
+        if (TicksUntilDeathmatch > 0)
+        {
+            Lines.add(Component.text("Until Deathmatch:").color(DeathmatchColor));
+            Lines.add(Component.text(FormatTime(TicksUntilDeathmatch)).color(DeathmatchColor));
+        }
         if (GetGameInstance().GetTicksRemainingUntilBorderShrink() > 0)
         {
+            if (!Lines.isEmpty())
+            {
+                Lines.add(Component.empty());
+            }
             Lines.add(Component.text("Until Border Shrink:").color(BorderColor));
             Lines.add(Component.text(FormatTime(TicksUntilBorderShrink)).color(BorderColor));
+        }
+        if (Lines.isEmpty())
+        {
+            Lines.add(Component.text("DEATHMATCH").color(NamedTextColor.DARK_RED));
         }
 
         SetTextLines(Lines);
@@ -162,6 +173,20 @@ public class GameDisplayBoard extends GameComponent<MLGPvPGameInstance>
         ResetTickClock();
     }
 
+    private void OnGameStartEvent(GameInstanceStartEvent event)
+    {
+        UpdateDisplayBoard();
+    }
+
+    private void OnCompleteEvent(GameInstanceCompleteEvent event)
+    {
+        _scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+        for (IServerPlayer Player : GetGameInstance().GetJoinedPlayers())
+        {
+            Player.GetUnderlyingPlayer().setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+    }
+
 
 
     // Inherited methods.
@@ -180,6 +205,8 @@ public class GameDisplayBoard extends GameComponent<MLGPvPGameInstance>
 
         GetGameInstance().GetEntityAddEvent().Subscribe(this, this::OnEntityAddEvent);
         GetGameInstance().GetEntityRemoveEvent().Subscribe(this, this::OnEntityRemoveEvent);
+        GetGameInstance().GetStartEvent().Subscribe(this, this::OnGameStartEvent, -5);
+        GetGameInstance().GetCompleteEvent().Subscribe(this, this::OnCompleteEvent);
     }
 
     @Override
@@ -188,6 +215,8 @@ public class GameDisplayBoard extends GameComponent<MLGPvPGameInstance>
         super.UnsubscribeFromEvents(dispatcher);
 
         GetGameInstance().GetEntityAddEvent().Unsubscribe(this);
+        GetGameInstance().GetStartEvent().Unsubscribe(this);
         GetGameInstance().GetEntityRemoveEvent().Unsubscribe(this);
+        GetGameInstance().GetCompleteEvent().Unsubscribe(this);
     }
 }

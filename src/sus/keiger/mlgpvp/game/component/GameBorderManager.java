@@ -2,6 +2,7 @@ package sus.keiger.mlgpvp.game.component;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldBorder;
@@ -10,6 +11,7 @@ import sus.keiger.mlgpvp.game.MLGPvPGameInstance;
 import sus.keiger.mlgpvp.game.event.GameBorderBeginShrinkEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.game.event.GameInstanceStartEvent;
+import sus.keiger.plugincommon.PCMath;
 import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.TickClock;
 
@@ -35,6 +37,7 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
     {
         super(gameInstance);
         _borderShrinkClock.SetHandler(this::OnBorderShrinkBeginEvent);
+        _borderShrinkClock.SetIsRunning(true);
     }
 
 
@@ -44,12 +47,18 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
         return _beginShrinkEvent;
     }
 
+    public int GetTicksUntilShrink()
+    {
+        return _borderShrinkClock.GetTicksLeft();
+    }
+
 
     // Private methods.
     private void OnBorderShrinkBeginEvent(TickClock clock)
     {
         WorldBorder Border = GetGameInstance().GetCenterLocation().getWorld().getWorldBorder();
-        Border.setSize(GetValues().BorderDiameterMin, Math.round(GetValues().BorderShrinkStartTimeSeconds));
+        Border.setSize(GetValues().BorderDiameterMin, Math.round(PCMath.TicksToSeconds(
+                GetGameInstance().GetTicksRemainingUntilDeathmatch())));
         _beginShrinkEvent.FireEvent(new GameBorderBeginShrinkEvent(GetGameInstance()));
         GetGameInstance().SendMessage(Component.text("The border is now shrinking!").color(NamedTextColor.RED));
     }
@@ -69,6 +78,8 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
         Border.setSize(GetValues().BorderDiameterMax, 0L);
         Border.setDamageAmount(DAMAGE_AMOUNT);
         Border.setDamageBuffer(DAMAGE_BUFFER);
+
+        _borderShrinkClock.SetTicksLeft(PCMath.SecondsToTicks(GetValues().BorderShrinkStartTimeSeconds));
     }
 
     private void OnGameCompleteEvent(GameInstanceCompleteEvent event)
