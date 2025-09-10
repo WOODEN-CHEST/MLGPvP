@@ -82,6 +82,8 @@ public class MLGPvPCommand
                     DefaultValues.GetProperties(ModifiableField).Value()));
         }
 
+        Command.AddSubNode(CreateConfigNode(Data));
+
         return Command;
     }
 
@@ -131,7 +133,7 @@ public class MLGPvPCommand
         return RootNode;
     }
 
-    private static CommandNode GetConfigNode(MLGPvPCommand data)
+    private static CommandNode CreateConfigNode(MLGPvPCommand data)
     {
         CommandNode RootNode = new KeywordNode(KEYWORD_CONFIG, null, null);
 
@@ -199,8 +201,16 @@ public class MLGPvPCommand
         {
             try
             {
+                if (!_configManager.DoesConfigExist(name))
+                {
+                    data.SetStatus(CommandStatus.Unsuccessful);
+                    data.SetFeedback("No config with the name \"%s\" exists.".formatted(name));
+                    return;
+                }
+
                 _gameSessionExecutor.GetGlobalGameValues().CopyValuesFrom(
-                        _configManager.LoadConfig(data.GetParsedData(name)));
+                        _configManager.LoadConfig(name));
+                UpdateCachedConfigs();
                 data.SetFeedback("Config \"%s\" successfully loaded!".formatted(name));
             }
             catch (ConfigException e)
@@ -216,7 +226,8 @@ public class MLGPvPCommand
         {
             try
             {
-                _configManager.SaveConfig(data.GetParsedData(name), _gameSessionExecutor.GetGlobalGameValues());
+                _configManager.SaveConfig(name, _gameSessionExecutor.GetGlobalGameValues());
+                UpdateCachedConfigs();
                 data.SetFeedback("Config \"%s\" successfully saved!".formatted(name));
             }
             catch (ConfigException e)
@@ -248,6 +259,7 @@ public class MLGPvPCommand
         try
         {
             List<String> Configs = _configManager.GetConfigs();
+            UpdateCachedConfigs();
             data.SetFeedback(GetConfigsListString(Configs));
         }
         catch (ConfigException e)
@@ -262,8 +274,17 @@ public class MLGPvPCommand
         {
             try
             {
-                _configManager.DeleteConfig(data.GetParsedData(name));
-                data.SetFeedback("Config \"%s\" successfully deleted!".formatted(name));
+                ExplainedResult Result = _configManager.DeleteConfig(name);
+                if (Result.IsSuccessful())
+                {
+                    data.SetFeedback("Config \"%s\" successfully deleted!".formatted(name));
+                }
+                else
+                {
+                    data.SetStatus(CommandStatus.Unsuccessful);
+                    data.SetFeedback("Failed to delete config: %s".formatted(Result.GetMessage()));
+                }
+                UpdateCachedConfigs();
             }
             catch (ConfigException e)
             {
@@ -277,13 +298,13 @@ public class MLGPvPCommand
         try
         {
             UpdateCachedConfigs();
+            data.SetFeedback("Refreshed configs!");
         }
         catch (ConfigException e)
         {
             OnConfigAccessException(data, "refresh configs", e);
         }
     }
-
 
     private void Start(CommandData data)
     {

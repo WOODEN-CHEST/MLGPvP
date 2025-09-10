@@ -170,7 +170,7 @@ public class JSONConfigManager implements IConfigManager
 
         VerifyNameOrThrow(name);
 
-        if (DoesConfigExist(name))
+        if (!DoesConfigExist(name))
         {
             return ExplainedResult.Error("Config \"%s\" does not exist.".formatted(name));
         }
