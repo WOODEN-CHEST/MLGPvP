@@ -42,7 +42,7 @@ public class GamePlayerStateEnsurer extends GameComponent<MLGPvPGameInstance>
         double ZOffset = (_rng.nextDouble() - 0.5d) * Diameter;
 
         TargetLocation.add(new Vector(XOffset, 0d, ZOffset));
-        TargetLocation.setY(TargetLocation.getWorld().getHighestBlockYAt(TargetLocation));
+        TargetLocation.setY(TargetLocation.getWorld().getHighestBlockYAt(TargetLocation) + 1d);
 
         return TargetLocation;
     }

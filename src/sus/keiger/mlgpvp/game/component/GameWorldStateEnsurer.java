@@ -17,6 +17,8 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
     private Location _centerLocation = new Location(Bukkit.getServer().getWorlds().getFirst(), 0d, 0d, 0d, 0f, 0f);
 
     private boolean _savedRuleLocatorBar;
+    private boolean _savedRuleAnnounceAdvancements;
+    private boolean _savedRuleImmediateRespawn;
 
 
 
@@ -28,7 +30,7 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
 
 
     // Methods.
-    public Location GetCenerLocation()
+    public Location GetCenterLocation()
     {
         return _centerLocation.clone();
     }
@@ -57,11 +59,17 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
     private void SaveGameRules(World world)
     {
         _savedRuleLocatorBar = Optional.ofNullable(world.getGameRuleValue(GameRule.LOCATOR_BAR)).orElse(false);
+        _savedRuleAnnounceAdvancements = Optional.ofNullable(
+                world.getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS)).orElse(false);
+        _savedRuleImmediateRespawn = Optional.ofNullable(
+                world.getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN)).orElse(false);
     }
 
     private void LoadGameRules(World world)
     {
         world.setGameRule(GameRule.LOCATOR_BAR, _savedRuleLocatorBar);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, _savedRuleAnnounceAdvancements);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, _savedRuleImmediateRespawn);
     }
 
     private void InitGameRules(World world)
@@ -69,6 +77,8 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
         SaveGameRules(world);
 
         world.setGameRule(GameRule.LOCATOR_BAR, false);
+        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
     }
 
 
@@ -80,6 +90,7 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
         super.SubscribeToEvents(dispatcher);
 
         GetGameInstance().GetStartEvent().Subscribe(this, this::OnGameStartEvent);
+        GetGameInstance().GetCompleteEvent().Subscribe(this, this::OnGameCompleteEvent);
     }
 
     @Override
@@ -88,5 +99,6 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
         super.UnsubscribeFromEvents(dispatcher);
 
         GetGameInstance().GetStartEvent().Unsubscribe(this);
+        GetGameInstance().GetCompleteEvent().Unsubscribe(this);
     }
 }

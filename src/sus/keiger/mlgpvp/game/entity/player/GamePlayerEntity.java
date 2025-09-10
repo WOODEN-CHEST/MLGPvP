@@ -142,9 +142,9 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         return _eventHandler.GetEmptyBucketEvent();
     }
 
-    public void RewardMLGWaterBucket(double fallDistance)
+    public void RewardMLGWaterBucket(double fallFactor)
     {
-        _mlgRewarder.RewardPlayer(fallDistance);
+        _mlgRewarder.RewardPlayer(fallFactor);
     }
 
     public PCPluginEvent<GamePlayerFireArrowEvent> GetFireArrowEvent()

@@ -23,7 +23,7 @@ public class GameInstanceValues
     /* Border */
     @GameDoubleField(Description = "The diameter of the border at the start of the game.",
             MinValue = 1d, MaxValue = 10_000_000d)
-    public double BorderDiameterMax = 200d;
+    public double BorderDiameterMax = 250d;
 
     @GameDoubleField(Description = "The diameter of the border to which it shrinks.",
             MinValue = 1d, MaxValue = 10_000_000d)
@@ -40,7 +40,7 @@ public class GameInstanceValues
 
     @GameIntField(Description = "The amount of totems of undying granted to each player.",
         MinValue = 0, MaxValue = 16)
-    public int TotemCount = 4;
+    public int TotemCount = 5;
 
     @GameIntField(Description = "The amount of water buckets granted to each player.",
             MinValue = 0, MaxValue = 16)
@@ -48,11 +48,15 @@ public class GameInstanceValues
 
     @GameIntField(Description = "The amount of golden apples granted to each player.",
             MinValue = 0, MaxValue = 128)
-    public int GoldenAppleCount = 16;
+    public int GoldenAppleCount = 12;
 
     @GameIntField(Description = "The amount of arrows granted to each player.",
             MinValue = 0, MaxValue = 512)
-    public int ArrowCount = 128;
+    public int ArrowCount = 24;
+
+    @GameIntField(Description = "The amount of ender pearls granted to each player.",
+            MinValue = 0, MaxValue = 64)
+    public int EnderPearlCount = 0;
 
     @GameBoolField(Description = "Whether the players are given the explosive bow")
     public boolean IsExplosiveBowEnabled = true;
@@ -79,17 +83,17 @@ public class GameInstanceValues
     public double ExplosionBlockDamageScale = 1d;
 
     @GameBoolField(Description = "Whether directly hitting a player with an arrow causes an explosion.")
-    public boolean ArrowsExplodeOnDirectImpact = false;
+    public boolean ArrowsExplodeOnDirectImpact = true;
 
     @GameDoubleField(Description = "The scale of bow explosion power.",
             MinValue = 0, MaxValue = 10d)
-    public double BowExplosionPower = 1d;
+    public double BowExplosionPower = 1.5d;
 
     @GameDoubleField(Description = "The scale of crossbow explosion power.",
             MinValue = 0, MaxValue = 10d)
     public double CrossbowExplosionPower = 2.1d;
 
-    @GameBoolField(Description = "Whether the climb height is reset when a player is affected by a smaller" +
+    @GameBoolField(Description = "Whether the climb height is reset when a player is affected by a smaller " +
             "explosion while still mid-air from a previous explosion. Set to false for a more casual experience.")
     public boolean IsClimbHeightReset = true;
 

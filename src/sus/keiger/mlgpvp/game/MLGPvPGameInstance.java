@@ -33,7 +33,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GameStateController _stateController;
     private final GameEntityCollection _entities;
     private final GamePlayerCollection _players;
-    private final GameLocation _location;
+    private final GameWorldStateEnsurer _worldStateEnsurer;
     private final GamePlayerStateEnsurer _playerStateEnsurer;
     private final GameFlowExecutor _flowExecutor;
     private final GameBorderManager _borderManager;
@@ -51,7 +51,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _stateController = new GameStateController(this);
         _entities = new GameEntityCollection(this);
         _players = new GamePlayerCollection(this);
-        _location = new GameLocation(this);
+        _worldStateEnsurer = new GameWorldStateEnsurer(this);
         _playerStateEnsurer = new GamePlayerStateEnsurer(this);
         _flowExecutor = new GameFlowExecutor(this);
         _borderManager = new GameBorderManager(this);
@@ -61,7 +61,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         AddComponent(_stateController);
         AddComponent(_entities);
         AddComponent(_players);
-        AddComponent(_location);
+        AddComponent(_worldStateEnsurer);
         AddComponent(_playerStateEnsurer);
         AddComponent(_flowExecutor);
         AddComponent(_borderManager);
@@ -278,13 +278,13 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public void SetCenterLocation(Location location)
     {
-        _location.SetCenterLocation(location);
+        _worldStateEnsurer.SetCenterLocation(location);
     }
 
     @Override
     public Location GetCenterLocation()
     {
-        return _location.GetCenterLocation();
+        return _worldStateEnsurer.GetCenterLocation();
     }
 
     @Override

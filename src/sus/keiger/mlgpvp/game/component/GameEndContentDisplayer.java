@@ -154,28 +154,17 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
     private void AppendSingleStat(List<PlayerEndData> allPlayerData,
                                   PlayerEndData specificPlayerData,
                                   TextComponent.Builder builder,
-                                  Function<PlayerEndData, Object> valueSupplier,
+                                  Function<PlayerEndData, Number> valueSupplier,
                                   int statDirection,
                                   String statName,
                                   TextColor color)
     {
-        Object Value = valueSupplier.apply(specificPlayerData);
-        String StringValue;
-        double DoubleValue;
-
-        if (Value instanceof Number NumberValue)
-        {
-            DoubleValue = NumberValue.doubleValue();
-            StringValue = Value instanceof Double ? _format.format(NumberValue.doubleValue()) : NumberValue.toString();
-        }
-        else
-        {
-            throw new IllegalArgumentException("Player stat value must be a number.");
-        }
+        Number Value = valueSupplier.apply(specificPlayerData);
+        String StringValue = Value instanceof Double DoubleValue ? _format.format(DoubleValue) : Value.toString();
 
         int Rank = GetPlayerRankingInStat(specificPlayerData,
                 allPlayerData,
-                data -> DoubleValue,
+                data -> valueSupplier.apply(data).doubleValue(),
                 statDirection);
 
         builder.append(Component.newline());

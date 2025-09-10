@@ -113,6 +113,13 @@ public class MLGPvPCommand
     // Private methods.
     private void Start(CommandData data)
     {
+        if (_gameSessionExecutor.GetCurrentGameInstance().GetState() != GameInstanceState.Lobby)
+        {
+            data.SetFeedback("Can't start game while another game is already active!");
+            data.SetStatus(CommandStatus.Unsuccessful);
+            return;
+        }
+
         _gameSessionExecutor.GetCurrentGameInstance().SetCenterLocation(data.GetLocation());
         ExplainedResult StartResult = _gameSessionExecutor.StartGame();
         if (!StartResult.IsSuccessful())

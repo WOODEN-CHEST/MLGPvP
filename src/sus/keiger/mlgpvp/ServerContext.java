@@ -41,7 +41,7 @@ public class ServerContext
     {
         if (_isInitialized)
         {
-            throw new IllegalStateException("Server context already is initialized.");
+            throw new ServerContextException("Server context already is initialized.");
         }
 
         try
@@ -61,7 +61,7 @@ public class ServerContext
     {
         if (!_isInitialized)
         {
-            throw new IllegalStateException("Server context hasn't been initialized yet.");
+            throw new ServerContextException("Server context hasn't been initialized yet.");
         }
 
         try

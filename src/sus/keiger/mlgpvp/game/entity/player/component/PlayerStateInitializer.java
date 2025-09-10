@@ -84,6 +84,7 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         AddItems(() -> CreateArmor(Material.NETHERITE_CHESTPLATE), 1, SLOT_FIRST_CHESTPLATE);
         AddItems(() -> CreateArmor(Material.NETHERITE_LEGGINGS), 1, SLOT_FIRST_LEGGINGS);
         AddItems(() -> CreateArmor(Material.NETHERITE_BOOTS), 1, SLOT_FIRST_BOOTS);
+        AddItems(() -> ItemStack.of(Material.ENDER_PEARL), GetConfigValues().EnderPearlCount, null);
     }
 
     private ItemStack CreateUnbreakableTool(Material material)

@@ -120,9 +120,14 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
 
     private float GetClimbFactor()
     {
+        return GetClimbFactor(GetClimbedHeight());
+    }
+
+    private float GetClimbFactor(double currentClimbHeight)
+    {
         // Not exactly correct since the climbing height scaling isn't linear, but good enough.
         double MaxClimbHeight = CLIMB_HEIGHT_MAX_BLOCKS * GetConfigValues().ExplosionKnockbackScale;
-        return Math.max(FACTOR_MIN, Math.min(FACTOR_MAX, (float)(GetClimbedHeight() / MaxClimbHeight)));
+        return Math.max(FACTOR_MIN, Math.min(FACTOR_MAX, (float)(currentClimbHeight / MaxClimbHeight)));
     }
 
     private void TickClimb()
@@ -284,7 +289,10 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
                 VOLUME,
                 PITCH);
 
-        GetEntity().RewardMLGWaterBucket(fallDistance);
+        if (GetConfigValues().IsMLGRewardingEnabled)
+        {
+            GetEntity().RewardMLGWaterBucket(GetClimbFactor(fallDistance));
+        }
 
         _landMLGEvent.FireEvent(new GamePlayerLandMLGEvent(GetEntity(), fallDistance));
     }
