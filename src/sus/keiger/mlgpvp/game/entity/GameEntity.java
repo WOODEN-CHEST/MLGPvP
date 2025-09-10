@@ -151,6 +151,11 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
         return _wrappedEntity.getBoundingBox();
     }
 
+    public void Teleport(Location location)
+    {
+        _wrappedEntity.teleport(location);
+    }
+
 
     // Inherited methods.
     @Override

@@ -108,7 +108,7 @@ public class GameDisplayBoard extends GameComponent<MLGPvPGameInstance>
 
     private void AppendCounter(StringBuilder builder, int value)
     {
-        if (value < 9)
+        if (value <= 9)
         {
             builder.append('0');
         }

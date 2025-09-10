@@ -97,6 +97,7 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
         TextComponent.Builder Builder = Component.text();
 
         Builder.append(Component.text("Player stats:").color(NamedTextColor.GOLD));
+        Builder.append(Component.newline());
 
         List<PlayerEndData> AllPlayerData = GetPlayersSortedByScoreAscending();
         for (PlayerEndData PlayerData : AllPlayerData)
@@ -147,7 +148,7 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
                 DIRECTION_LOWER_BETTER, "MLGs Failed", Colors.GetColor());
 
         AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Score,
-                DIRECTION_HIGHER_BETTER, "Final Score", Colors.GetColor());
+                DIRECTION_HIGHER_BETTER, "Final Score", NamedTextColor.BLUE);
     }
 
     private void AppendSingleStat(List<PlayerEndData> allPlayerData,

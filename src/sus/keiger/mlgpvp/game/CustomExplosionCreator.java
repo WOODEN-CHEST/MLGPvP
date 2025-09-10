@@ -15,7 +15,7 @@ public class CustomExplosionCreator implements IExplosionCreator
     // Private static fields.
     private static final double RADIUS_PER_STRENGTH = 3.5d; // Main factor in radius calculations.
     private static final double DAMAGE_PER_STRENGTH = PCMath.HeartsToHealth(2.0d);
-    private static final double KNOCKBACK_RADIUS_SCALE = 6d;
+    private static final double KNOCKBACK_RADIUS_SCALE = 2.5d;
     private static final double DAMAGE_RADIUS_SCALE = 2.5d;
     private static final double BLOCK_RADIUS_SCALE = 1d;
 
@@ -28,7 +28,9 @@ public class CustomExplosionCreator implements IExplosionCreator
 
     private static final double MAX_CHANCE = 1d;
     private static final double MIN_CHANCE = 0d;
-    private static final double RADIUS_FALLOFF_EXPONENT = 3d; // Used so that the chance of block destruction isn't linear.
+
+    // Used so that the falloff chance of block destruction isn't linear.
+    private static final double RADIUS_FALLOFF_EXPONENT = 3d;
 
     private static final float EXPLOSION_SOUND_VOLUME = 1.25f;
     private static final float EXPLOSION_SOUND_PITCH = 0.8f;
