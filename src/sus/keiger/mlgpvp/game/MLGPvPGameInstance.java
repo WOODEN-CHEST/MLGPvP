@@ -39,6 +39,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     private final GameBorderManager _borderManager;
     private final GameDeathMatchExecutor _deathMatchExecutor;
     private final GameDisplayBoard _displayBoard;
+    private final GameSpectatorCollection _spectators;
 
 
     // Constructors.
@@ -57,6 +58,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         _borderManager = new GameBorderManager(this);
         _deathMatchExecutor = new GameDeathMatchExecutor(this);
         _displayBoard = new GameDisplayBoard(this);
+        _spectators = new GameSpectatorCollection(this);
 
         AddComponent(_stateController);
         AddComponent(_entities);
@@ -67,6 +69,7 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
         AddComponent(_borderManager);
         AddComponent(_deathMatchExecutor);
         AddComponent(_displayBoard);
+        AddComponent(_spectators);
     }
 
 
@@ -225,25 +228,25 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public void AddSpectator(IServerPlayer player)
     {
-
+        _spectators.AddSpectator(player);
     }
 
     @Override
     public void RemoveSpectator(IServerPlayer player)
     {
-
+        _spectators.RemoveSpectator(player);
     }
 
     @Override
     public int GetSpectatorCount()
     {
-        return 0;
+        return _spectators.GetSpectatorCount();
     }
 
     @Override
     public List<IServerPlayer> GetSpectators()
     {
-        return List.of();
+        return _spectators.GetSpectators();
     }
 
     @Override
@@ -302,7 +305,9 @@ public class MLGPvPGameInstance implements IGameInstanceExtended
     @Override
     public List<? extends IAudienceMember> GetAudienceMembers()
     {
-        return _players.GetJoinedPlayers();
+        ArrayList<IAudienceMember> Members = new ArrayList<>(_players.GetJoinedPlayers());
+        Members.addAll(GetSpectators());
+        return Members;
     }
 
     @Override
