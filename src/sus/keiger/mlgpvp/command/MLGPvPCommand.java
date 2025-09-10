@@ -4,13 +4,20 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import sus.keiger.mlgpvp.config.ConfigException;
+import sus.keiger.mlgpvp.config.IConfigManager;
+import sus.keiger.mlgpvp.config.JSONConfigManager;
 import sus.keiger.mlgpvp.game.*;
 import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.plugincommon.ExplainedResult;
+import sus.keiger.plugincommon.PCString;
 import sus.keiger.plugincommon.command.*;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class MLGPvPCommand
 {
@@ -22,21 +29,33 @@ public class MLGPvPCommand
     private static final String KEYWORD_START = "start";
     private static final String KEYWORD_CANCEL = "cancel";
     private static final String KEYWORD_SETTING = "setting";
+    private static final String KEYWORD_CONFIG = "config";
+    private static final String KEYWORD_LOAD = "load";
+    private static final String KEYWORD_DELETE = "delete";
+    private static final String KEYWORD_SAVE = "save";
+    private static final String KEYWORD_REFRESH = "refresh";
+    private static final String KEYWORD_LIST = "list";
     private static final String KEYWORD_RESET_SETTINGS = "reset_settings";
 
     private static final String KEY_VALUE = "value";
+    private static final String KEY_CONFIG_NAME = "config_name";
 
 
 
     // Private fields.
     private final IGameSessionExecutor _gameSessionExecutor;
+    private final IServerServices _services;
+    private final IConfigManager _configManager;
+    private List<String> _cachedAvailableConfigs = Collections.emptyList();
 
 
 
     // Constructors.
-    private MLGPvPCommand(IGameSessionExecutor gameSessionExecutor)
+    private MLGPvPCommand(IGameSessionExecutor gameSessionExecutor, IServerServices services)
     {
         _gameSessionExecutor = Objects.requireNonNull(gameSessionExecutor, "gameSessionExecutor is null");
+        _configManager = new JSONConfigManager(services);
+        _services = services;
     }
 
 
@@ -44,7 +63,8 @@ public class MLGPvPCommand
     // Static methods.
     public static ServerCommand CreteCommand(IGameSessionExecutor gameSessionExecutor, IServerServices services)
     {
-        MLGPvPCommand Data = new MLGPvPCommand(gameSessionExecutor);
+        GameInstanceValues DefaultValues = new GameInstanceValues();
+        MLGPvPCommand Data = new MLGPvPCommand(gameSessionExecutor, services);
 
         ServerCommand Command = new ServerCommand(LABEL, null, services.GetLogger());
 
@@ -57,7 +77,9 @@ public class MLGPvPCommand
 
         for (Field ModifiableField : GameInstanceValues.GetModifiableFields())
         {
-            SettingNode.AddSubNode(FieldToNode(Data, ModifiableField));
+            SettingNode.AddSubNode(FieldToNode(Data,
+                    ModifiableField,
+                    DefaultValues.GetProperties(ModifiableField).Value()));
         }
 
         return Command;
@@ -65,10 +87,11 @@ public class MLGPvPCommand
 
 
     // Private static methods.
-    private static CommandNode FieldToNode(MLGPvPCommand data, Field field)
+    private static CommandNode FieldToNode(MLGPvPCommand data, Field field, String defaultValue)
     {
         CommandNode RootNode = new KeywordNode(field.getName(),
                 commandData -> data.ShowSingleSetting(commandData, field), null);
+        List<String> DefaultValue = List.of(defaultValue);
 
         GameFieldType FieldType = GameInstanceValues.GetFieldType(field);
         if (FieldType == GameFieldType.BoolField)
@@ -78,7 +101,7 @@ public class MLGPvPCommand
         else if (FieldType == GameFieldType.IntField)
         {
             RootNode.AddSubNode(new NumberNode(commandData -> data.SetField(commandData, field),
-                    null,
+                    _ -> DefaultValue,
                     KEY_VALUE,
                     NumberNodeType.Integer,
                     false,
@@ -87,7 +110,7 @@ public class MLGPvPCommand
         else if (FieldType == GameFieldType.DoubleField)
         {
             RootNode.AddSubNode(new NumberNode(commandData -> data.SetField(commandData, field),
-                    null,
+                    _ -> DefaultValue,
                     KEY_VALUE,
                     NumberNodeType.Double,
                     false,
@@ -97,7 +120,7 @@ public class MLGPvPCommand
         {
             RootNode.AddSubNode(new StringNode(commandData -> data.SetField(commandData, field),
                     true,
-                    null,
+                    _ -> DefaultValue,
                     KEY_VALUE));
         }
         else
@@ -108,9 +131,160 @@ public class MLGPvPCommand
         return RootNode;
     }
 
+    private static CommandNode GetConfigNode(MLGPvPCommand data)
+    {
+        CommandNode RootNode = new KeywordNode(KEYWORD_CONFIG, null, null);
+
+        CommandNode LoadNode = new KeywordNode(KEYWORD_LOAD, null, null);
+        RootNode.AddSubNode(LoadNode);
+        CommandNode LoadNameNode = new StringNode(data::LoadConfig, true,
+                commandData -> data._cachedAvailableConfigs, KEY_CONFIG_NAME);
+        LoadNode.AddSubNode(LoadNameNode);
+
+        CommandNode SaveNode = new KeywordNode(KEYWORD_SAVE, null, null);
+        RootNode.AddSubNode(SaveNode);
+        CommandNode SaveNameNode = new StringNode(data::SaveConfig, true,
+                commandData -> List.of("example_config_name"), KEY_CONFIG_NAME);
+        SaveNode.AddSubNode(SaveNameNode);
+
+        CommandNode DeleteNode = new KeywordNode(KEYWORD_DELETE, null, null);
+        RootNode.AddSubNode(DeleteNode);
+        CommandNode DeleteNameNode = new StringNode(data::DeleteConfig, true,
+                commandData -> data._cachedAvailableConfigs, KEY_CONFIG_NAME);
+        DeleteNode.AddSubNode(DeleteNameNode);
+
+        CommandNode ListConfigsNode = new KeywordNode(KEYWORD_LIST, data::ListConfigs, null);
+        RootNode.AddSubNode(ListConfigsNode);
+
+        CommandNode RefreshConfigsNode = new KeywordNode(KEYWORD_REFRESH, data::RefreshConfigs, null);
+        RootNode.AddSubNode(RefreshConfigsNode);
+
+        return RootNode;
+    }
+
 
 
     // Private methods.
+    private void UpdateCachedConfigs()
+    {
+        _cachedAvailableConfigs = _configManager.GetConfigs();
+    }
+
+    private void ContinueWithConfigName(CommandData data, Consumer<String> function)
+    {
+        String Name = data.GetParsedData(KEY_CONFIG_NAME);
+        ExplainedResult Result = _configManager.VerifyConfigName(Name);
+        if (Result.IsSuccessful())
+        {
+            function.accept(Name);
+        }
+        else
+        {
+            data.SetStatus(CommandStatus.Unsuccessful);
+            data.SetFeedback("Invalid config name! %s".formatted(Result.GetMessage()));
+        }
+    }
+
+    private void OnConfigAccessException(CommandData data, String actionName, Exception e)
+    {
+        data.SetStatus(CommandStatus.Unsuccessful);
+        data.SetFeedback("Failed to %s due to an internal error, please check logs.".formatted(actionName));
+        _services.GetLogger().severe(e.getMessage());
+    }
+
+
+    private void LoadConfig(CommandData data)
+    {
+        ContinueWithConfigName(data, name ->
+        {
+            try
+            {
+                _gameSessionExecutor.GetGlobalGameValues().CopyValuesFrom(
+                        _configManager.LoadConfig(data.GetParsedData(name)));
+                data.SetFeedback("Config \"%s\" successfully loaded!".formatted(name));
+            }
+            catch (ConfigException e)
+            {
+                OnConfigAccessException(data, "load config", e);
+            }
+        });
+    }
+
+    private void SaveConfig(CommandData data)
+    {
+        ContinueWithConfigName(data, name ->
+        {
+            try
+            {
+                _configManager.SaveConfig(data.GetParsedData(name), _gameSessionExecutor.GetGlobalGameValues());
+                data.SetFeedback("Config \"%s\" successfully saved!".formatted(name));
+            }
+            catch (ConfigException e)
+            {
+                OnConfigAccessException(data, "save config", e);
+            }
+        });
+    }
+
+    private String GetConfigsListString(List<String> configs)
+    {
+        if (configs.isEmpty())
+        {
+            return "There are no configs available";
+        }
+
+        StringBuilder Builder = new StringBuilder();
+        Builder.append("%d %s available:".formatted(configs.size(), PCString.Pluralize("config", configs.size())));
+        for (String ConfigName : configs)
+        {
+            Builder.append("\n\"%s\"".formatted(ConfigName));
+        }
+
+        return Builder.toString();
+    }
+
+    private void ListConfigs(CommandData data)
+    {
+        try
+        {
+            List<String> Configs = _configManager.GetConfigs();
+            data.SetFeedback(GetConfigsListString(Configs));
+        }
+        catch (ConfigException e)
+        {
+            OnConfigAccessException(data, "refresh configs", e);
+        }
+    }
+
+    private void DeleteConfig(CommandData data)
+    {
+        ContinueWithConfigName(data, name ->
+        {
+            try
+            {
+                _configManager.DeleteConfig(data.GetParsedData(name));
+                data.SetFeedback("Config \"%s\" successfully deleted!".formatted(name));
+            }
+            catch (ConfigException e)
+            {
+                OnConfigAccessException(data, "delete config", e);
+            }
+        });
+    }
+
+    private void RefreshConfigs(CommandData data)
+    {
+        try
+        {
+            UpdateCachedConfigs();
+        }
+        catch (ConfigException e)
+        {
+            OnConfigAccessException(data, "refresh configs", e);
+        }
+    }
+
+
     private void Start(CommandData data)
     {
         if (_gameSessionExecutor.GetCurrentGameInstance().GetState() != GameInstanceState.Lobby)
