@@ -13,6 +13,8 @@ import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
+import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
+import sus.keiger.mlgpvp.player.ServerPlayerDisconnectEvent;
 import sus.keiger.plugincommon.player.PlayerFunctions;
 
 import java.util.function.Supplier;
@@ -189,7 +191,6 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
 
 
     // Inherited methods.
-
     @Override
     public void Initialize()
     {
@@ -203,6 +204,9 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         super.SubscribeToEvents(dispatcher);
 
         GetEntity().GetLifeChangeEvent().Subscribe(this, this::OnPlayerLifeChangeEvent);
+
+        /* Basically a stupid hack by setting this here. */
+        GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
     }
 
     @Override
@@ -211,5 +215,8 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         super.UnsubscribeFromEvents(dispatcher);
 
         GetEntity().GetLifeChangeEvent().Unsubscribe(this);
+
+        /* Hack continues... */
+        GetEntity().SetIsGlowing(false);
     }
 }
