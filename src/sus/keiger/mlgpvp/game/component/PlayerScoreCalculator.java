@@ -18,8 +18,8 @@ public class PlayerScoreCalculator
     public double CalculateScore(PlayerGameStats stats)
     {
         double PointsForMLGsLanded = stats.GetWaterBucketsLanded() * POINTS_PER_MLG_LANDED;
-        double PointsForMLGsFailed = stats.GetWaterBucketsFailed() * POINTS_PER_DAMAGE_DEALT;
-        double PointsForDamageDealt = stats.GetDamageDealt() * POINTS_PER_MLG_FAILED;
+        double PointsForMLGsFailed = stats.GetWaterBucketsFailed() * POINTS_PER_MLG_FAILED;
+        double PointsForDamageDealt = stats.GetDamageDealt() * POINTS_PER_DAMAGE_DEALT;
         double PointsForDirectHits = stats.GetDirectHits() * POINTS_PER_DIRECT_HIT;
         double PointsForDamageTaken = stats.GetDamageTaken() * POINTS_PER_DAMAGE_TAKEN;
         double PointsForBlocksClimbed = stats.GetDistanceClimbed() * POINTS_PER_BLOCKS_CLIMBED;
