@@ -99,9 +99,6 @@ public class GameInstanceValues
             "explosion while still mid-air from a previous explosion. Set to false for a more casual experience.")
     public boolean IsClimbHeightReset = true;
 
-    @GameBoolField(Description = "Whether water can be placed in the nether.")
-    public boolean CanPlaceWaterInNether = false;
-
 
 
     // Static methods.

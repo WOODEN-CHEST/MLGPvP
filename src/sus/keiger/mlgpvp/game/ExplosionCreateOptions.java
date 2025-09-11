@@ -1,6 +1,7 @@
 package sus.keiger.mlgpvp.game;
 
 import org.bukkit.Location;
+import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class ExplosionCreateOptions
     private final double _blockScale;
     private final double _damageScale;
     private final double _knockbackScale;
-    private final GamePlayerEntity _sourcePlayer;
+    private final GameEntity _sourceEntity;
 
 
     // Constructors.
@@ -22,14 +23,14 @@ public class ExplosionCreateOptions
                                    double blockScale,
                                    double damageScale,
                                    double knockbackScale,
-                                   GamePlayerEntity sourcePlayer)
+                                   GameEntity sourceEntity)
     {
         _location = Objects.requireNonNull(location, "location is null");
         _strengthScale = strengthScale;
         _blockScale = blockScale;
         _damageScale = damageScale;
         _knockbackScale = knockbackScale;
-        _sourcePlayer = sourcePlayer;
+        _sourceEntity = sourceEntity;
 
     }
 
@@ -60,9 +61,9 @@ public class ExplosionCreateOptions
         return _knockbackScale;
     }
 
-    public GamePlayerEntity GetSourcePlayer()
+    public GameEntity GetSourcePlayer()
     {
-        return _sourcePlayer;
+        return _sourceEntity;
     }
 
 
@@ -72,19 +73,19 @@ public class ExplosionCreateOptions
                                                 double blockScale,
                                                 double damageScale,
                                                 double knockbackScale,
-                                                GamePlayerEntity SourcePlayer)
+                                                GameEntity sourceEntity)
     {
         return new ExplosionCreateOptions(location,
                 strengthScale,
                 blockScale,
                 damageScale,
                 knockbackScale,
-                SourcePlayer);
+                sourceEntity);
     }
 
     public static ExplosionCreateOptions CreateFromValues(Location location,
                                                           double strengthScale,
-                                                          GamePlayerEntity SourcePlayer,
+                                                          GameEntity sourceEntity,
                                                           GameInstanceValues values)
     {
         return new ExplosionCreateOptions(location,
@@ -92,6 +93,6 @@ public class ExplosionCreateOptions
                 values.ExplosionBlockDamageScale,
                 values.ExplosionDamageScale,
                 values.ExplosionKnockbackScale,
-                SourcePlayer);
+                sourceEntity);
     }
 }

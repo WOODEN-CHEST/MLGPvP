@@ -56,6 +56,16 @@ public class MLGPvPCommand
         _gameSessionExecutor = Objects.requireNonNull(gameSessionExecutor, "gameSessionExecutor is null");
         _configManager = new JSONConfigManager(services);
         _services = services;
+
+        try
+        {
+            UpdateCachedConfigs();
+        }
+        catch (ConfigException e)
+        {
+            _services.GetLogger().severe("Failed to update cached configs in MLGPvP command constructor: %s"
+                    .formatted(PCString.ExceptionToString(e)));
+        }
     }
 
 
@@ -236,7 +246,7 @@ public class MLGPvPCommand
                 else
                 {
                     data.SetStatus(CommandStatus.Unsuccessful);
-                    data.SetFeedback("failed to save config: %s".formatted(Result.GetMessage()));
+                    data.SetFeedback("Failed to save config: %s".formatted(Result.GetMessage()));
                 }
             }
             catch (ConfigException e)

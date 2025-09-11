@@ -30,6 +30,6 @@ public class GamePlayerDamageEvent extends GamePlayerEntityEvent
 
     public Optional<GameEntity> GetSource()
     {
-        return Optional.of(_source);
+        return Optional.ofNullable(_source);
     }
 }

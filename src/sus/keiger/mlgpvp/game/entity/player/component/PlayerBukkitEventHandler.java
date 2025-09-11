@@ -14,6 +14,7 @@ import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerDamageEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFireArrowEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerHitByArrowEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
 
 
@@ -22,6 +23,7 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
     // Private fields.
     private final PCPluginEvent<GamePlayerEmptyBucketEvent> _emptyBucketEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GamePlayerFireArrowEvent> _fireArrowEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerHitByArrowEvent> _hitByArrowEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -40,6 +42,11 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
     public PCPluginEvent<GamePlayerFireArrowEvent> GetFireArrowEvent()
     {
         return _fireArrowEvent;
+    }
+
+    public PCPluginEvent<GamePlayerHitByArrowEvent> GetHitByArrowEvent()
+    {
+        return _hitByArrowEvent;
     }
 
 

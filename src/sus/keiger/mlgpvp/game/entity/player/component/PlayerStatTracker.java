@@ -42,21 +42,21 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
                 return;
             }
 
-            if (Source.get() instanceof GameArrowEntity ArrowSource)
-            {
-                ArrowSource.GetShooter().flatMap(this::GetStats).ifPresent(attackerStats ->
-                {
-                    attackerStats.SetDirectHits(attackerStats.GetDirectHits() + 1);
-                    attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
-                });
-            }
-            else if (Source.get() instanceof GamePlayerEntity PlayerSource)
+            if (Source.get() instanceof GamePlayerEntity PlayerSource)
             {
                 GetStats(PlayerSource).ifPresent(attackerStats ->
                 {
                     attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
                 });
             }
+        });
+    }
+
+    private void OnHitByArrowEvent(GamePlayerHitByArrowEvent event)
+    {
+        event.GetArrow().GetShooter().flatMap(this::GetStats).ifPresent(stats ->
+        {
+            stats.SetDirectHits(stats.GetDirectHits() + 1);
         });
     }
 
@@ -114,6 +114,7 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().GetFailMLGEvent().Subscribe(this, this::OnPlayerFailMLGEvent);
         GetEntity().GetClimbEndEvent().Subscribe(this, this::OnClimbEndEvent);
         GetEntity().GetDamageEvent().Subscribe(this, this::OnPlayerDamageEvent);
+        GetEntity().GetHitByArrowEvent().Subscribe(this, this::OnHitByArrowEvent);
     }
 
     @Override
@@ -126,5 +127,6 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().GetFailMLGEvent().Unsubscribe(this);
         GetEntity().GetClimbEndEvent().Unsubscribe(this);
         GetEntity().GetDamageEvent().Unsubscribe(this);
+        GetEntity().GetHitByArrowEvent().Unsubscribe(this);
     }
 }

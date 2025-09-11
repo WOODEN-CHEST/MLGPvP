@@ -119,7 +119,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         }
     }
 
-    private void DealDamage(Location explosionLocation, double strength, GamePlayerEntity source)
+    private void DealDamage(Location explosionLocation, double strength, GameEntity source)
     {
         ModifyPlayersBasedOnFactor(explosionLocation, strength, DAMAGE_RADIUS_SCALE, (player, factor) ->
         {

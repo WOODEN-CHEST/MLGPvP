@@ -182,6 +182,11 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         GetPlayerEntity().setScoreboard(scoreboard);
     }
 
+    public PCPluginEvent<GamePlayerHitByArrowEvent> GetHitByArrowEvent()
+    {
+        return _eventHandler.GetHitByArrowEvent();
+    }
+
 
     // Inherited methods.
     @Override

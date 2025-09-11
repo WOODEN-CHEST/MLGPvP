@@ -7,6 +7,10 @@ import sus.keiger.mlgpvp.game.ExplosionCreateOptions;
 import sus.keiger.mlgpvp.game.IExplosionCreator;
 import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
+import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerHitByArrowEvent;
+
+import java.util.Optional;
 
 public class ArrowBukkitEventHandler extends GameEntityComponent<GameArrowEntity>
 {
@@ -45,6 +49,13 @@ public class ArrowBukkitEventHandler extends GameEntityComponent<GameArrowEntity
                 GetEntity().GetExplosionStrengthScale(),
                 GetEntity().GetShooter().orElse(null),
                 GetConfigValues()));
+
+        Optional.ofNullable(GetGameInstance().GetEntity(event.getHitEntity()))
+                .flatMap(optional -> optional)
+                .filter(entity -> entity instanceof GamePlayerEntity)
+                .map(entity -> (GamePlayerEntity)entity)
+                .ifPresent(entity ->
+                        entity.GetHitByArrowEvent().FireEvent(new GamePlayerHitByArrowEvent(entity, GetEntity())));
 
         GetGameInstance().RemoveEntity(GetEntity());
     }

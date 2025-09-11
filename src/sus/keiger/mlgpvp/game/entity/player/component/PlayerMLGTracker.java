@@ -213,11 +213,6 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         if (IsFallingFromExplosion())
         {
             _currentFall.PlacedWaterBlock = event.GetBlock();
-            if (GetEntity().GetLocation().getWorld().isUltraWarm() && GetConfigValues().CanPlaceWaterInNether)
-            {
-                Block TargetBlock = event.GetBlock();
-                TargetBlock.setType(Material.WATER);
-            }
         }
     }
 
