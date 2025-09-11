@@ -2,6 +2,8 @@ package sus.keiger.mlgpvp.game.entity.player.component;
 
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
+import sus.keiger.mlgpvp.game.entity.GameEntity;
+import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.*;
@@ -28,27 +30,34 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
         return GetGameInstance().GetPlayerStats(player.GetServerPlayer());
     }
 
-    private void OnPlayerDamageEvent(GamePlayerTakeDamageEvent event)
+    private void OnPlayerDamageEvent(GamePlayerDamageEvent event)
     {
         GetStats().ifPresent(stats ->
         {
-            stats.SetDamageTaken(stats.GetDamageTaken() + event.GetFinalDamageAmount());
+            stats.SetDamageTaken(stats.GetDamageTaken() + event.GetAmount());
 
-            Optional<GamePlayerEntity> HitPlayer = event.GetCausePlayer();
-            if (HitPlayer.isEmpty())
+            Optional<GameEntity> Source = event.GetSource();
+            if (Source.isEmpty())
             {
                 return;
             }
-            GetStats(HitPlayer.get()).ifPresent(attackerStats ->
+
+            if (Source.get() instanceof GameArrowEntity ArrowSource)
             {
-                attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetFinalDamageAmount());
-                if (event.IsProjectileHit())
+                ArrowSource.GetShooter().flatMap(this::GetStats).ifPresent(attackerStats ->
                 {
                     attackerStats.SetDirectHits(attackerStats.GetDirectHits() + 1);
-                }
-            });
+                    attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
+                });
+            }
+            else if (Source.get() instanceof GamePlayerEntity PlayerSource)
+            {
+                GetStats(PlayerSource).ifPresent(attackerStats ->
+                {
+                    attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
+                });
+            }
         });
-
     }
 
     private void OnPlayerLandMLGEvent(GamePlayerLandMLGEvent event)
@@ -104,12 +113,18 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().GetLandMLGEvent().Subscribe(this, this::OnPlayerLandMLGEvent);
         GetEntity().GetFailMLGEvent().Subscribe(this, this::OnPlayerFailMLGEvent);
         GetEntity().GetClimbEndEvent().Subscribe(this, this::OnClimbEndEvent);
-        GetEntity().GetDamageTakeEvent().Subscribe(this, this::OnPlayerDamageEvent);
+        GetEntity().GetDamageEvent().Subscribe(this, this::OnPlayerDamageEvent);
     }
 
     @Override
     public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
     {
         super.UnsubscribeFromEvents(dispatcher);
+
+        GetEntity().GetFireArrowEvent().Unsubscribe(this);
+        GetEntity().GetLandMLGEvent().Unsubscribe(this);
+        GetEntity().GetFailMLGEvent().Unsubscribe(this);
+        GetEntity().GetClimbEndEvent().Unsubscribe(this);
+        GetEntity().GetDamageEvent().Unsubscribe(this);
     }
 }

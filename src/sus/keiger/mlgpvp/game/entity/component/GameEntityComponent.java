@@ -40,6 +40,10 @@ public abstract class GameEntityComponent<T extends GameEntity> implements ITick
 
     public void Initialize() { }
 
+    public void AddPrepare() { }
+
+    public void RemoveCleanup() { }
+
 
     // Inherited methods.
     @Override

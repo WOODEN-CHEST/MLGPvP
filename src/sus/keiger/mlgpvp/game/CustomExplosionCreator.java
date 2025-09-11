@@ -119,7 +119,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         }
     }
 
-    private void DealDamage(Location explosionLocation, double strength)
+    private void DealDamage(Location explosionLocation, double strength, GamePlayerEntity source)
     {
         ModifyPlayersBasedOnFactor(explosionLocation, strength, DAMAGE_RADIUS_SCALE, (player, factor) ->
         {
@@ -128,7 +128,7 @@ public class CustomExplosionCreator implements IExplosionCreator
                 return;
             }
 
-            player.Damage(factor * DAMAGE_PER_STRENGTH * strength);
+            player.DamageFromEntity(factor * DAMAGE_PER_STRENGTH * strength, source);
         });
     }
 
@@ -205,7 +205,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         double FinalKnockbackStrength = options.GetKnockbackScale() * options.GetStrengthScale();
 
         DestroyBlocks(TargetLocation, FinalBlockStrength);
-        DealDamage(TargetLocation, FinalDamageStrength);
+        DealDamage(TargetLocation, FinalDamageStrength, options.GetSourcePlayer());
         DealKnockback(TargetLocation, FinalKnockbackStrength);
         CreateExplosionContent(TargetLocation, FinalBlockStrength);
     }

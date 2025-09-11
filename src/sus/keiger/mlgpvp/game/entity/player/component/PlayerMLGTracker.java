@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
@@ -212,6 +213,11 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         if (IsFallingFromExplosion())
         {
             _currentFall.PlacedWaterBlock = event.GetBlock();
+            if (GetEntity().GetLocation().getWorld().isUltraWarm() && GetConfigValues().CanPlaceWaterInNether)
+            {
+                Block TargetBlock = event.GetBlock();
+                TargetBlock.setType(Material.WATER);
+            }
         }
     }
 

@@ -1,6 +1,8 @@
 package sus.keiger.mlgpvp.game.entity.arrow;
 
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.projectiles.ProjectileSource;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.arrow.component.ArrowBukkitEventHandler;

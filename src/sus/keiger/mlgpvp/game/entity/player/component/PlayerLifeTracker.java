@@ -4,8 +4,11 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
+import sus.keiger.mlgpvp.game.entity.GameEntity;
+import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
+import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerDamageEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
 
@@ -14,6 +17,7 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
     // Private fields.
     private boolean _isAlive = true;
     private final PCPluginEvent<PlayerLifeChangeEvent> _lifeChangeEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerDamageEvent> _damageEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -33,6 +37,17 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
         event.setCancelled(true);
         SetIsAlive(false);
+    }
+
+    private void DamageIfAlive(double amount, GameEntity source)
+    {
+        if (!GetIsAlive())
+        {
+            return;
+        }
+
+        GetEntity().GetPlayerEntity().damage(amount);
+        _damageEvent.FireEvent(new GamePlayerDamageEvent(GetEntity(), amount, source));
     }
 
 
@@ -55,14 +70,13 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
     public void Damage(double amount)
     {
-        if (!GetIsAlive())
-        {
-            return;
-        }
-
-        GetEntity().GetPlayerEntity().damage(amount);
+        DamageIfAlive(amount, null);
     }
 
+    public void DamageFromEntity(double amount, GameEntity source)
+    {
+        DamageIfAlive(amount, source);
+    }
     public void Spawn()
     {
         SetIsAlive(true);
@@ -80,6 +94,11 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
     public PCPluginEvent<PlayerLifeChangeEvent> GetLifeChangeEvent()
     {
         return _lifeChangeEvent;
+    }
+
+    public PCPluginEvent<GamePlayerDamageEvent> GetDamageEvent()
+    {
+        return _damageEvent;
     }
 
 

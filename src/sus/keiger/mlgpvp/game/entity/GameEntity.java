@@ -73,7 +73,15 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
         _components.forEach(GameEntityComponent::Initialize);
     }
 
-    public void RemoveCleanup() { }
+    public void AddPrepare()
+    {
+        _components.forEach(GameEntityComponent::AddPrepare);
+    }
+
+    public void RemoveCleanup()
+    {
+        _components.forEach(GameEntityComponent::RemoveCleanup);
+    }
 
     public void Delete()
     {

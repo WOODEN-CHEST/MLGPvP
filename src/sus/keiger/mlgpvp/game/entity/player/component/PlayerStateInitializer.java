@@ -204,9 +204,6 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         super.SubscribeToEvents(dispatcher);
 
         GetEntity().GetLifeChangeEvent().Subscribe(this, this::OnPlayerLifeChangeEvent);
-
-        /* Basically a stupid hack by setting this here. */
-        GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
     }
 
     @Override
@@ -215,8 +212,19 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         super.UnsubscribeFromEvents(dispatcher);
 
         GetEntity().GetLifeChangeEvent().Unsubscribe(this);
+    }
 
-        /* Hack continues... */
+    @Override
+    public void AddPrepare()
+    {
+        super.AddPrepare();
+        GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
+    }
+
+    @Override
+    public void RemoveCleanup()
+    {
+        super.RemoveCleanup();
         GetEntity().SetIsGlowing(false);
     }
 }

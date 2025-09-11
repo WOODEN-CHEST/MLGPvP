@@ -7,7 +7,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.util.Vector;
 import sus.keiger.mlgpvp.game.IGameInstanceExtended;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.player.component.*;
@@ -107,6 +106,16 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         _lifeTracker.Damage(amount);
     }
 
+    public void DamageFromEntity(double amount, GameEntity source)
+    {
+        _lifeTracker.DamageFromEntity(amount, source);
+    }
+
+    public PCPluginEvent<GamePlayerDamageEvent> GetDamageEvent()
+    {
+        return _lifeTracker.GetDamageEvent();
+    }
+
     public void ResetHealth()
     {
         _lifeTracker.ResetHealth();
@@ -167,16 +176,11 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         return _mlgTracker.GetFailMLGEvent();
     }
 
-    public PCPluginEvent<GamePlayerTakeDamageEvent> GetDamageTakeEvent()
-    {
-        return _eventHandler.GetDamageTakeEvent();
-    }
 
     public void SetScoreboard(Scoreboard scoreboard)
     {
         GetPlayerEntity().setScoreboard(scoreboard);
     }
-
 
 
     // Inherited methods.

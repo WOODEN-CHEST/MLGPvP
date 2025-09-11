@@ -226,9 +226,18 @@ public class MLGPvPCommand
         {
             try
             {
-                _configManager.SaveConfig(name, _gameSessionExecutor.GetGlobalGameValues());
+                ExplainedResult Result = _configManager.SaveConfig(name, _gameSessionExecutor.GetGlobalGameValues());
                 UpdateCachedConfigs();
-                data.SetFeedback("Config \"%s\" successfully saved!".formatted(name));
+
+                if (Result.IsSuccessful())
+                {
+                    data.SetFeedback("Config \"%s\" successfully saved!".formatted(name));
+                }
+                else
+                {
+                    data.SetStatus(CommandStatus.Unsuccessful);
+                    data.SetFeedback("failed to save config: %s".formatted(Result.GetMessage()));
+                }
             }
             catch (ConfigException e)
             {

@@ -15,6 +15,9 @@ import sus.keiger.plugincommon.PCString;
 
 import java.util.Objects;
 
+/**
+ * The server context just for the MLGPvP plugin. Supposed to be used as a singleton.
+ */
 public class ServerContext
 {
     // Private fields.

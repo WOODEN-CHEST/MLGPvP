@@ -91,11 +91,17 @@ public class GameInstanceValues
 
     @GameDoubleField(Description = "The scale of crossbow explosion power.",
             MinValue = 0, MaxValue = 10d)
-    public double CrossbowExplosionPower = 2.1d;
+    public double CrossbowExplosionPower = 2.7d;
 
+
+    /* Other. */
     @GameBoolField(Description = "Whether the climb height is reset when a player is affected by a smaller " +
             "explosion while still mid-air from a previous explosion. Set to false for a more casual experience.")
     public boolean IsClimbHeightReset = true;
+
+    @GameBoolField(Description = "Whether water can be placed in the nether.")
+    public boolean CanPlaceWaterInNether = false;
+
 
 
     // Static methods.

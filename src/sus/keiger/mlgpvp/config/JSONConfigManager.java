@@ -28,6 +28,7 @@ public class JSONConfigManager implements IConfigManager
     private final IServerServices _services;
     private final Set<Character> _allowedChars = new HashSet<>();
     private final JSONConfigSerializer _serializer = new JSONConfigSerializer();
+    private final DefaultConfigProvider _defaultConfigs = new DefaultConfigProvider();
 
 
 
@@ -83,6 +84,12 @@ public class JSONConfigManager implements IConfigManager
 
         VerifyNameOrThrow(name);
 
+        Optional<GameInstanceValues> DefaultConfig = _defaultConfigs.GetConfig(name);
+        if (DefaultConfig.isPresent())
+        {
+            return DefaultConfig.get();
+        }
+
         try
         {
             Path TargetPath = GetConfigFilePath(name);
@@ -99,12 +106,18 @@ public class JSONConfigManager implements IConfigManager
     }
 
     @Override
-    public void SaveConfig(String name, GameInstanceValues config)
+    public ExplainedResult SaveConfig(String name, GameInstanceValues config)
     {
         Objects.requireNonNull(name, "name is null");
         Objects.requireNonNull(config, "config is null");
 
         VerifyNameOrThrow(name);
+
+        Optional<GameInstanceValues> DefaultConfig = _defaultConfigs.GetConfig(name);
+        if (DefaultConfig.isPresent())
+        {
+            return ExplainedResult.Error("A built-in config with this name already exists.");
+        }
 
         try
         {
@@ -119,6 +132,7 @@ public class JSONConfigManager implements IConfigManager
             {
                 OutStream.write(_serializer.Serialize(config).getBytes(StandardCharsets.UTF_8));
             }
+            return ExplainedResult.Success();
         }
         catch (SecurityException | IOException e)
         {
@@ -133,6 +147,12 @@ public class JSONConfigManager implements IConfigManager
         Objects.requireNonNull(name, "name is null");
 
         VerifyNameOrThrow(name);
+
+        Optional<GameInstanceValues> DefaultConfig = _defaultConfigs.GetConfig(name);
+        if (DefaultConfig.isPresent())
+        {
+            return true;
+        }
 
         try
         {
@@ -170,6 +190,12 @@ public class JSONConfigManager implements IConfigManager
 
         VerifyNameOrThrow(name);
 
+        Optional<GameInstanceValues> DefaultConfig = _defaultConfigs.GetConfig(name);
+        if (DefaultConfig.isPresent())
+        {
+            return ExplainedResult.Error("Cannot delete a built-in config.");
+        }
+
         if (!DoesConfigExist(name))
         {
             return ExplainedResult.Error("Config \"%s\" does not exist.".formatted(name));
@@ -199,15 +225,15 @@ public class JSONConfigManager implements IConfigManager
         try
         {
             return Optional.ofNullable(GetConfigDirectoryPath().toFile().listFiles())
-                    .map(files -> Arrays.stream(files)
+                    .map(files -> Stream.concat(Arrays.stream(files)
                             .map(file ->
                             {
                                 String FileName = file.getName();
                                 int LastSeparatorIndex = FileName.lastIndexOf(EXTENSION_INDICATOR);
                                 return LastSeparatorIndex == -1 ? FileName : FileName.substring(0, LastSeparatorIndex);
                             })
-                            .filter(name -> VerifyConfigName(name).IsSuccessful())
-                            .toList())
+                            .filter(name -> VerifyConfigName(name).IsSuccessful()),
+                            _defaultConfigs.GetConfigs().stream()).toList())
                     .orElse(Collections.emptyList());
         }
         catch (SecurityException e)

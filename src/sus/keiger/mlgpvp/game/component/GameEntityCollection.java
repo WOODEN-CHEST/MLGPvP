@@ -55,6 +55,7 @@ public class GameEntityCollection extends GameComponent<IGameInstanceExtended>
 
         UpdateEntityList();
         entity.SubscribeToEvents(GetServices().GetEventDispatcher());
+        entity.AddPrepare();
 
         GetGameInstance().GetEntityAddEvent().FireEvent(new GameInstanceEntityAddEvent(GetGameInstance(), entity));
     }
