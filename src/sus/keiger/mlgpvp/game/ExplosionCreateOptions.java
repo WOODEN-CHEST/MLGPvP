@@ -2,7 +2,6 @@ package sus.keiger.mlgpvp.game;
 
 import org.bukkit.Location;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 
 import java.util.Objects;
 
@@ -91,7 +90,7 @@ public class ExplosionCreateOptions
         return new ExplosionCreateOptions(location,
                 strengthScale,
                 values.ExplosionBlockDamageScale,
-                values.ExplosionDamageScale,
+                values.ExplosionDamageScale * (values.IsExplosionDamageEnabled ? 1d : 0d),
                 values.ExplosionKnockbackScale,
                 sourceEntity);
     }

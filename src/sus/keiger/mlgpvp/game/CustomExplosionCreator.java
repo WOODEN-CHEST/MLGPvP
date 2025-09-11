@@ -14,7 +14,7 @@ public class CustomExplosionCreator implements IExplosionCreator
 {
     // Private static fields.
     private static final double RADIUS_PER_STRENGTH = 3.5d; // Main factor in radius calculations.
-    private static final double DAMAGE_PER_STRENGTH = PCMath.HeartsToHealth(2.0d);
+    private static final double DAMAGE_PER_STRENGTH = PCMath.HeartsToHealth(1.0d);
     private static final double KNOCKBACK_RADIUS_SCALE = 2.5d;
     private static final double DAMAGE_RADIUS_SCALE = 2.5d;
     private static final double BLOCK_RADIUS_SCALE = 1d;

@@ -22,9 +22,10 @@ public class DefaultConfigProvider
     private void InitConfigs()
     {
         _configs.clear();
-        _configs.put("chaos", GetChaosConfig());
-        _configs.put("casual", GetCasualConfig());
-        _configs.put("hardcore", GetHardcoreConfig());
+        _configs.put("Chaos", GetChaosConfig());
+        _configs.put("Casual", GetCasualConfig());
+        _configs.put("Hardcore", GetHardcoreConfig());
+        _configs.put("NoDamage", GetNoDamageConfig());
     }
 
     private GameInstanceValues GetChaosConfig()
@@ -66,6 +67,19 @@ public class DefaultConfigProvider
         Config.FeatherFallingLevel = 0;
         Config.GoldenAppleCount = 8;
         Config.TotemCount = 0;
+
+        return Config;
+    }
+
+    private GameInstanceValues GetNoDamageConfig()
+    {
+        GameInstanceValues Config = new GameInstanceValues();
+
+        Config.IsArrowDamageEnabled = false;
+        Config.IsExplosionDamageEnabled = false;
+        Config.IsMeleeDamageEnabled = false;
+        Config.TotemCount = 1;
+        Config.WaterBucketCount = 3;
 
         return Config;
     }

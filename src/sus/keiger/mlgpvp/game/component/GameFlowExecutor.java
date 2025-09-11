@@ -32,12 +32,15 @@ public class GameFlowExecutor extends GameComponent<MLGPvPGameInstance>
     // Private methods.
     private void UpdateAlivePlayerCount()
     {
-        _alivePlayerCount = (int)
-                GetGameInstance()
-                .GetEntities()
-                .stream()
-                .filter(entity -> (entity instanceof GamePlayerEntity Player) && Player.GetIsAlive())
-                .count();
+        int Count = 0;
+        for (GameEntity Entity : GetGameInstance().GetEntities())
+        {
+            if ((Entity instanceof GamePlayerEntity PlayerEntity) && PlayerEntity.GetIsAlive())
+            {
+                Count++;
+            }
+        }
+        _alivePlayerCount = Count;
     }
 
     private void TryGameEndByPlayerCount()

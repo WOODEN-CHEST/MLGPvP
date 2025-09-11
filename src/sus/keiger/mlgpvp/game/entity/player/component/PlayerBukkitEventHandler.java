@@ -16,6 +16,7 @@ import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFireArrowEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerHitByArrowEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 
 public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEntity>
@@ -82,10 +83,22 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         _emptyBucketEvent.FireEvent(new GamePlayerEmptyBucketEvent(GetEntity(), event));
     }
 
+    private boolean IsDamageBlocked(DamageCause cause)
+    {
+        return ((cause == DamageCause.ENTITY_ATTACK) && !GetConfigValues().IsMeleeDamageEnabled)
+                || ((cause == DamageCause.PROJECTILE) && !GetConfigValues().IsArrowDamageEnabled);
+    }
+
     private void OnEntityDamageEvent(EntityDamageEvent event)
     {
         if (!event.getEntity().equals(GetEntity().GetUnderlyingEntity()))
         {
+            return;
+        }
+
+        if (IsDamageBlocked(event.getCause()))
+        {
+            event.setCancelled(true);
             return;
         }
 

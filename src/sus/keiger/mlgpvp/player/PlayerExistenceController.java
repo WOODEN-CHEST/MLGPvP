@@ -9,6 +9,9 @@ import sus.keiger.mlgpvp.service.IServerServices;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * This class ensures that for each player which joins the server, an <code>IServerPlayer</code> wrapper is created.
+ */
 public class PlayerExistenceController implements IMLGPvPEventListener
 {
     // Private fields.

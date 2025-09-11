@@ -100,6 +100,17 @@ public class GameInstanceValues
     public boolean IsClimbHeightReset = true;
 
 
+    /* Damage. */
+    @GameBoolField(Description = "Whether melee attacks deal damage.")
+    public boolean IsMeleeDamageEnabled = true;
+
+    @GameBoolField(Description = "Whether explosions deal damage.")
+    public boolean IsExplosionDamageEnabled = true;
+
+    @GameBoolField(Description = "Whether arrows (on direct hits) deal damage.")
+    public boolean IsArrowDamageEnabled = true;
+
+
 
     // Static methods.
     public static List<Field> GetModifiableFields()
