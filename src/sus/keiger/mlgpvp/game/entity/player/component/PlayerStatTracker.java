@@ -3,7 +3,6 @@ package sus.keiger.mlgpvp.game.entity.player.component;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
-import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.*;
@@ -64,7 +63,7 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
     {
         GetStats().ifPresent(stats ->
         {
-            stats.SetWaterBucketsLanded(stats.GetWaterBucketsLanded() + 1);
+            stats.SetMLGSLanded(stats.GetMLGSLanded() + 1);
             AddDistanceFallen(stats, event.GetFallDistance());
         });
     }
@@ -73,7 +72,7 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
     {
         GetStats().ifPresent(stats ->
         {
-            stats.SetWaterBucketsFailed(stats.GetWaterBucketsFailed() + 1);
+            stats.SetMLGSFailed(stats.GetMLGSFailed() + 1);
             AddDistanceFallen(stats, event.GetFallDistance());
         });
     }

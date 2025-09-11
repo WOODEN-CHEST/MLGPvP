@@ -1,10 +1,13 @@
 package sus.keiger.mlgpvp.event;
 
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent;
+import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import sus.keiger.plugincommon.EmptyEvent;
@@ -22,6 +25,9 @@ public class DefaultEventDispatcher implements IEventDispatcher
     private final PCPluginEvent<EmptyEvent> _tickEvent = new PCPluginEvent<>();
     private final PCPluginEvent<PlayerBucketEmptyEvent> _playerEmptyBucketEvent = new PCPluginEvent<>();
     private final PCPluginEvent<PlayerAdvancementCriterionGrantEvent> _criteriaGrantEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<PlayerItemConsumeEvent> _itemConsumeEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<PlayerLaunchProjectileEvent> _playerLaunchProjectileEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<BlockPlaceEvent> _blockPlaceEvent = new PCPluginEvent<>();
     private final EmptyEvent _emptyEventArgs = new EmptyEvent();
 
 
@@ -80,6 +86,23 @@ public class DefaultEventDispatcher implements IEventDispatcher
         _criteriaGrantEvent.FireEvent(event);
     }
 
+    @EventHandler
+    public void OnItemConsumeEvent(PlayerItemConsumeEvent event)
+    {
+        _itemConsumeEvent.FireEvent(event);
+    }
+
+    @EventHandler
+    public void OnPlayerLaunchProjectileEvent(PlayerLaunchProjectileEvent event)
+    {
+        _playerLaunchProjectileEvent.FireEvent(event);
+    }
+
+    @EventHandler
+    public void OnBlockPlaceEvent(BlockPlaceEvent event)
+    {
+        _blockPlaceEvent.FireEvent(event);
+    }
 
 
     // Inherited methods.
@@ -135,5 +158,23 @@ public class DefaultEventDispatcher implements IEventDispatcher
     public PCPluginEvent<PlayerAdvancementCriterionGrantEvent> GetAdvancementCriteriaGrantEvent()
     {
         return _criteriaGrantEvent;
+    }
+
+    @Override
+    public PCPluginEvent<PlayerItemConsumeEvent> GetItemConsumeEvent()
+    {
+        return _itemConsumeEvent;
+    }
+
+    @Override
+    public PCPluginEvent<PlayerLaunchProjectileEvent> GetLaunchProjectileEvent()
+    {
+        return _playerLaunchProjectileEvent;
+    }
+
+    @Override
+    public PCPluginEvent<BlockPlaceEvent> GetBlockPlaceEvent()
+    {
+        return _blockPlaceEvent;
     }
 }

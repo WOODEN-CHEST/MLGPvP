@@ -32,8 +32,6 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
     private static final boolean DOES_BOW_USE_ARROWS = false;
     private static final boolean DOES_CROSSBOW_USE_ARROWS = true;
 
-    private static final int PROTECTION_LEVEL = 2;
-
 
 
     // Constructors.
@@ -71,22 +69,62 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
     {
         PlayerFunctions.ClearInventory(GetEntity().GetPlayerEntity());
 
-        AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_SWORD), 1, null);
+        if (GetConfigValues().IsArmorIncluded)
+        {
+            AddItems(() -> CreateArmor(Material.NETHERITE_HELMET), 1, SLOT_FIRST_HELMET);
+            AddItems(() -> CreateArmor(Material.NETHERITE_CHESTPLATE), 1, SLOT_FIRST_CHESTPLATE);
+            AddItems(() -> CreateArmor(Material.NETHERITE_LEGGINGS), 1, SLOT_FIRST_LEGGINGS);
+            AddItems(() -> CreateArmor(Material.NETHERITE_BOOTS), 1, SLOT_FIRST_BOOTS);
+        }
+
+        if (GetConfigValues().IsExplosiveBowEnabled)
+        {
+            AddItems(this::GetBow, 1, null);
+        }
+        if (GetConfigValues().IsExplosiveCrossbowEnabled)
+        {
+            AddItems(this::GetCrossbow, 1, null);
+        }
+
         AddItems(() -> ItemStack.of(Material.WATER_BUCKET), GetConfigValues().WaterBucketCount, null);
-        AddItems(this::GetBow, GetConfigValues().IsExplosiveBowEnabled ? 1 : 0, null);
-        AddItems(this::GetCrossbow, GetConfigValues().IsExplosiveCrossbowEnabled ? 1 : 0, null);
+        AddItems(() -> ItemStack.of(Material.POWDER_SNOW_BUCKET), GetConfigValues().PowderedSnowBucketCount, null);
+        AddItems(() -> ItemStack.of(Material.SCAFFOLDING), GetConfigValues().ScaffoldingCount, null);
+        AddItems(() -> ItemStack.of(Material.SWEET_BERRIES), GetConfigValues().SweetBerryCount, null);
+        AddItems(() -> ItemStack.of(Material.LADDER), GetConfigValues().LadderCount, null);
+        AddItems(() -> ItemStack.of(Material.VINE), GetConfigValues().VineCount, null);
+        AddItems(() -> ItemStack.of(Material.TWISTING_VINES), GetConfigValues().TwistingVineCount, null);
+        AddItems(() -> ItemStack.of(Material.COBWEB), GetConfigValues().CobwebCount, null);
+        AddItems(() -> ItemStack.of(Material.SLIME_BLOCK), GetConfigValues().SlimeBlockCount, null);
+
         AddItems(() -> ItemStack.of(Material.GOLDEN_APPLE), GetConfigValues().GoldenAppleCount, null);
-        AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_PICKAXE), 1, null);
-        AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_AXE), 1, null);
-        AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_SHOVEL), 1, null);
         AddItems(() -> ItemStack.of(Material.TOTEM_OF_UNDYING), GetConfigValues().TotemCount, SLOT_FIRST_TOTEM);
+
+        AddItems(() -> ItemStack.of(Material.ENDER_PEARL), GetConfigValues().EnderPearlCount, null);
+        AddItems(() -> ItemStack.of(Material.CHORUS_FRUIT), GetConfigValues().ChorusFruitCount, null);
+
         AddItems(() -> ItemStack.of(Material.ARROW), GetConfigValues().ArrowCount, null);
 
-        AddItems(() -> CreateArmor(Material.NETHERITE_HELMET), 1, SLOT_FIRST_HELMET);
-        AddItems(() -> CreateArmor(Material.NETHERITE_CHESTPLATE), 1, SLOT_FIRST_CHESTPLATE);
-        AddItems(() -> CreateArmor(Material.NETHERITE_LEGGINGS), 1, SLOT_FIRST_LEGGINGS);
-        AddItems(() -> CreateArmor(Material.NETHERITE_BOOTS), 1, SLOT_FIRST_BOOTS);
-        AddItems(() -> ItemStack.of(Material.ENDER_PEARL), GetConfigValues().EnderPearlCount, null);
+        if (GetConfigValues().IsSwordIncluded)
+        {
+            AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_SWORD), 1, null);
+        }
+        if (GetConfigValues().IsAxeIncluded)
+        {
+            AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_AXE), 1, null);
+        }
+        if (GetConfigValues().IsPickaxeIncluded)
+        {
+            AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_PICKAXE), 1, null);
+        }
+        if (GetConfigValues().IsShovelIncluded)
+        {
+            AddItems(() -> CreateUnbreakableTool(Material.NETHERITE_SHOVEL), 1, null);
+        }
+    }
+
+    private int GetCount(boolean isEnabled)
+    {
+        return isEnabled ? 1 : 0;
     }
 
     private ItemStack CreateUnbreakableTool(Material material)
@@ -101,7 +139,7 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         ItemStack Item = CreateUnbreakableTool(material);
         Item.editMeta(meta ->
         {
-            meta.addEnchant(Enchantment.PROTECTION, PROTECTION_LEVEL, true);
+            meta.addEnchant(Enchantment.PROTECTION, GetConfigValues().ArmorProtectionLevel, true);
             if (Enchantment.FEATHER_FALLING.canEnchantItem(Item) && (GetConfigValues().FeatherFallingLevel > 0))
             {
                 meta.addEnchant(Enchantment.FEATHER_FALLING, GetConfigValues().FeatherFallingLevel, true);

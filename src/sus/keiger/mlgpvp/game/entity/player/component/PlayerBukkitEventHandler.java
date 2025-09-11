@@ -1,30 +1,34 @@
 package sus.keiger.mlgpvp.game.entity.player.component;
 
+import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent;
+import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderPearl;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
 import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.ExplosiveWeaponBuilder;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerDamageEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFireArrowEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerHitByArrowEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.*;
 import sus.keiger.plugincommon.PCPluginEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-
+/* This class should be split into many smaller classes which each focuses on a specific event instead of
+* whatever this is. */
 public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEntity>
 {
     // Private fields.
     private final PCPluginEvent<GamePlayerEmptyBucketEvent> _emptyBucketEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GamePlayerFireArrowEvent> _fireArrowEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GamePlayerHitByArrowEvent> _hitByArrowEvent = new PCPluginEvent<>();
+    private final PCPluginEvent<GamePlayerBlockPlaceEvent> _blockPlaceEvent = new PCPluginEvent<>();
 
 
     // Constructors.
@@ -50,6 +54,11 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         return _hitByArrowEvent;
     }
 
+    public PCPluginEvent<GamePlayerBlockPlaceEvent> GetBlockPlaceEvent()
+    {
+        return _blockPlaceEvent;
+    }
+
 
     // Private methods.
     private void OnEntityShootBowEvent(EntityShootBowEvent event)
@@ -68,6 +77,8 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
                     GetEntity(),
                     stats.StrengthScale());
             GetGameInstance().AddEntity(SpawnedEntity);
+
+            SpawnedEntity.SetMotion(SpawnedEntity.GetMotion().multiply(GetConfigValues().ArrowSpeedMultiplier));
 
             _fireArrowEvent.FireEvent(new GamePlayerFireArrowEvent(GetEntity(), SpawnedEntity));
         });
@@ -108,6 +119,44 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         GetEntity().GetDamageEvent().FireEvent(new GamePlayerDamageEvent(GetEntity(), event.getDamage(), SourceEntity));
     }
 
+    private void OnItemConsumeEvent(PlayerItemConsumeEvent event)
+    {
+        if (!event.getPlayer().equals(GetEntity().GetUnderlyingEntity()))
+        {
+            return;
+        }
+
+        if ((event.getItem().getType() == Material.CHORUS_FRUIT) && !GetConfigValues().IsChorusFruitEnabled)
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    private void OnLaunchProjectileEvent(PlayerLaunchProjectileEvent event)
+    {
+        if (!event.getPlayer().equals(GetEntity().GetUnderlyingEntity()))
+        {
+            return;
+        }
+
+        if ((event.getProjectile() instanceof EnderPearl) && !GetConfigValues().IsEnderPearlsEnabled)
+        {
+            event.setCancelled(true);
+        }
+    }
+
+    private void OnBlockPlaceEvent(BlockPlaceEvent event)
+    {
+        if (!event.getPlayer().equals(GetEntity().GetUnderlyingEntity()))
+        {
+            return;
+        }
+
+        _blockPlaceEvent.FireEvent(new GamePlayerBlockPlaceEvent(GetEntity(), event));
+    }
+
+
+
 
 
     // Inherited methods.
@@ -119,6 +168,8 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         dispatcher.GetShootBowEvent().Subscribe(this, this::OnEntityShootBowEvent);
         dispatcher.GetPlayerBucketEmptyEvent().Subscribe(this, this::OnEmptyBucketEvent);
         dispatcher.GetEntityDamageEvent().Subscribe(this, this::OnEntityDamageEvent);
+        dispatcher.GetItemConsumeEvent().Subscribe(this, this::OnItemConsumeEvent);
+        dispatcher.GetLaunchProjectileEvent().Subscribe(this, this::OnLaunchProjectileEvent);
     }
 
     @Override
@@ -129,5 +180,7 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         dispatcher.GetShootBowEvent().Unsubscribe(this);
         dispatcher.GetPlayerBucketEmptyEvent().Unsubscribe(this);
         dispatcher.GetEntityDamageEvent().Unsubscribe(this);
+        dispatcher.GetItemConsumeEvent().Unsubscribe(this);
+        dispatcher.GetLaunchProjectileEvent().Unsubscribe(this);
     }
 }

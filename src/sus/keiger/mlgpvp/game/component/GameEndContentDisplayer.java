@@ -6,17 +6,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
 import sus.keiger.mlgpvp.MLGPvPPlugin;
-import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.MLGPvPGameInstance;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
-import sus.keiger.mlgpvp.game.event.GameInstanceCompleteEvent;
 import sus.keiger.mlgpvp.player.IServerPlayer;
 
 import java.text.NumberFormat;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
 {
@@ -141,10 +138,10 @@ public class GameEndContentDisplayer extends GameComponent<MLGPvPGameInstance>
         AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetDirectHits(),
                 DIRECTION_HIGHER_BETTER, "Direct Arrow Hits", Colors.GetColor());
 
-        AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetWaterBucketsLanded(),
+        AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetMLGSLanded(),
                 DIRECTION_HIGHER_BETTER, "MLGs Landed", Colors.GetColor());
 
-        AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetWaterBucketsFailed(),
+        AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Stats.GetMLGSFailed(),
                 DIRECTION_LOWER_BETTER, "MLGs Failed", Colors.GetColor());
 
         AppendSingleStat(allPlayerData, specificPlayerData, builder, data -> data.Score,

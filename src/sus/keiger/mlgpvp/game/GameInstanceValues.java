@@ -7,6 +7,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Stores configuration for a game instance, this pretty much is just a bunch of modifiable "constants" in code
+ * lumped together in one class.
+ *
+ * <br>The fields which are meant to be modified must be public and annotated with "GameXField" annotations.
+ *
+ * <br>The values are modified using reflection.
+ */
 public class GameInstanceValues
 {
     // Fields.
@@ -38,25 +46,82 @@ public class GameInstanceValues
             "an MLG water bucket.")
     public boolean IsMLGRewardingEnabled = true;
 
-    @GameIntField(Description = "The amount of totems of undying granted to each player.",
+    @GameIntField(Description = ITEM_DESC_START + "totems" + ITEM_DESC_END,
         MinValue = 0, MaxValue = 16)
     public int TotemCount = 5;
 
-    @GameIntField(Description = "The amount of water buckets granted to each player.",
+    @GameIntField(Description = ITEM_DESC_START + "water buckets" + ITEM_DESC_END,
             MinValue = 0, MaxValue = 16)
     public int WaterBucketCount = 2;
 
-    @GameIntField(Description = "The amount of golden apples granted to each player.",
+    @GameIntField(Description = ITEM_DESC_START + "powdered snow buckets" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 16)
+    public int PowderedSnowBucketCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "scaffolding blocks" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int ScaffoldingCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "sweet berries" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int SweetBerryCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "ladders" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int LadderCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "vines" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int VineCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "twisting vines" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int TwistingVineCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "cobwebs" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 256)
+    public int CobwebCount = 0;
+
+    @GameBoolField(Description = "Whether the players are given a sword.")
+    public boolean IsSwordIncluded = true;
+
+    @GameBoolField(Description = "Whether the players are given an axe.")
+    public boolean IsAxeIncluded = true;
+
+    @GameBoolField(Description = "Whether the players are given a shovel.")
+    public boolean IsShovelIncluded = true;
+
+    @GameBoolField(Description = "Whether the players are given a pickaxe.")
+    public boolean IsPickaxeIncluded = true;
+
+    @GameBoolField(Description = "Whether the players are given a full set of netherite armor.")
+    public boolean IsArmorIncluded = true;
+
+    @GameIntField(Description = ITEM_DESC_START + "golden apples" + ITEM_DESC_END,
             MinValue = 0, MaxValue = 128)
     public int GoldenAppleCount = 12;
 
-    @GameIntField(Description = "The amount of arrows granted to each player.",
+    @GameIntField(Description = ITEM_DESC_START + "arrows" + ITEM_DESC_END,
             MinValue = 0, MaxValue = 512)
     public int ArrowCount = 24;
 
-    @GameIntField(Description = "The amount of ender pearls granted to each player.",
+    @GameIntField(Description = ITEM_DESC_START + "ender pearls" + ITEM_DESC_END,
             MinValue = 0, MaxValue = 64)
     public int EnderPearlCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "chorus fruit" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 512)
+    public int ChorusFruitCount = 0;
+
+    @GameIntField(Description = ITEM_DESC_START + "slime blocks" + ITEM_DESC_END,
+            MinValue = 0, MaxValue = 512)
+    public int SlimeBlockCount = 0;
+
+    @GameBoolField(Description = "Whether chorus fruits can be eaten.")
+    public boolean IsChorusFruitEnabled = true;
+
+    @GameBoolField(Description = "Whether ender pearls can be used.")
+    public boolean IsEnderPearlsEnabled = true;
 
     @GameBoolField(Description = "Whether the players are given the explosive bow")
     public boolean IsExplosiveBowEnabled = true;
@@ -67,6 +132,10 @@ public class GameInstanceValues
     @GameIntField(Description = "The feather falling level applied to boots.",
             MinValue = 0, MaxValue = 10)
     public int FeatherFallingLevel = 2;
+
+    @GameIntField(Description = "The armor protection enchantment level applied to all armor pieces.",
+            MinValue = 0, MaxValue = 5)
+    public int ArmorProtectionLevel = 2;
 
 
     /* Explosions */
@@ -93,6 +162,10 @@ public class GameInstanceValues
             MinValue = 0, MaxValue = 10d)
     public double CrossbowExplosionPower = 2.7d;
 
+    @GameDoubleField(Description = "The multiplier of shot arrow velocity.",
+            MinValue = -10d, MaxValue = 10d)
+    public double ArrowSpeedMultiplier = 1d;
+
 
     /* Other. */
     @GameBoolField(Description = "Whether the climb height is reset when a player is affected by a smaller " +
@@ -111,8 +184,18 @@ public class GameInstanceValues
     public boolean IsArrowDamageEnabled = true;
 
 
+    //Private static fields.
+    private static final String ITEM_DESC_START = "The amount of ";
+    private static final String ITEM_DESC_END = " granted to each player.";
+
+
 
     // Static methods.
+    /**
+     * Gets a list of fields in this class which are considered modifiable constants, any other fields outside
+     * these should not be used in other field related methods and should not be modified.
+     * @return List of modifiable fields.
+     */
     public static List<Field> GetModifiableFields()
     {
         return Arrays.stream(GameInstanceValues.class.getFields())
@@ -120,6 +203,12 @@ public class GameInstanceValues
                 .toList();
     }
 
+
+    /**
+     * Determines whether the following field is an annotated modifiable constant.
+     * @param field The field to test.
+     * @return <code>true</code> if it's a modifiable field, <code>false</code> otherwise.
+     */
     public static boolean IsModifiableField(Field field)
     {
         return (field.getAnnotation(GameBoolField.class) != null)
@@ -128,6 +217,12 @@ public class GameInstanceValues
                 || (field.getAnnotation(GameStringField.class) != null);
     }
 
+    /**
+     * Gets the type of field which the given one is.
+     * @param field The field to get the type of.
+     * @return The field's type.
+     * @throws GameValuesException if the field is not an annotated modifiable constant.
+     */
     public static GameFieldType GetFieldType(Field field)
     {
         GameBoolField BoolField = field.getAnnotation(GameBoolField.class);
@@ -157,6 +252,12 @@ public class GameInstanceValues
     }
 
 
+    /**
+     * Copies the values of modifiable fields from the given source into this object's modifiable fields.
+     * @param source The source of the values to copy from.
+     * @throws NullPointerException if <code>source</code> is <code>null</code>.
+     * @throws GameValuesException if an error occurs copying the values.
+     */
     // Methods.
     public void CopyValuesFrom(GameInstanceValues source)
     {
@@ -175,11 +276,23 @@ public class GameInstanceValues
         }
     }
 
+    /**
+     * Resets all values for this object to their defaults.
+     * @throws GameValuesException If an error occurs while resetting the values.
+     */
     public void Reset()
     {
         CopyValuesFrom(new GameInstanceValues());
     }
 
+    /**
+     * Gets the currently set properties for a modifiable field for this object.
+     * @param field The field whose value and properties to read.
+     * @return The field's properties.
+     * @throws NullPointerException if <code>field</code> is <code>null</code>.
+     * @throws GameValuesException if the given field is not a valid modifiable field or an error occurs
+     * getting the properties of the field.
+     */
     public GameFieldProperties GetProperties(Field field)
     {
         Objects.requireNonNull(field, "field is null");
@@ -223,16 +336,52 @@ public class GameInstanceValues
         throw new GameValuesException("Invalid field \"%s\"".formatted(field.toString()));
     }
 
+    /**
+     * Sets the value of the given field for this object.
+     * @param field The field whose value to change.
+     * @param value The new value of the field.
+     * @throws NullPointerException if <code>field</code> is <code>null</code>.
+     * @throws GameValuesException if <code>field</code> an error occurs while setting the field.
+     */
     public void SetField(Field field, Object value)
     {
+        Objects.requireNonNull(field, "field is null");
         try
         {
-            field.set(this, value);
+            GameFieldType FieldType = GetFieldType(field);
+            if (FieldType == GameFieldType.DoubleField)
+            {
+                SetDoubleField(field, value);
+            }
+            else if (FieldType == GameFieldType.IntField)
+            {
+                SetIntField(field, value);
+            }
+            else
+            {
+                field.set(this, value);
+            }
         }
-        catch (IllegalAccessException | IllegalArgumentException e)
+        catch (IllegalAccessException | IllegalArgumentException | ClassCastException e)
         {
             throw new GameValuesException("Failed to set field \"%s\": %s"
                     .formatted(field.getName(), PCString.ExceptionToString(e)));
         }
+    }
+
+
+    // Private methods.
+    private void SetDoubleField(Field field, Object value) throws IllegalAccessException
+    {
+        GameDoubleField AnnotationValue = field.getAnnotation(GameDoubleField.class);
+        double DoubleValue = ((Double)value);
+        field.set(this, Math.max(AnnotationValue.MinValue(), Math.min(DoubleValue, AnnotationValue.MaxValue())));
+    }
+
+    private void SetIntField(Field field, Object value) throws IllegalAccessException
+    {
+        GameIntField AnnotationValue = field.getAnnotation(GameIntField.class);
+        int IntValue = ((Integer)value);
+        field.set(this, Math.max(AnnotationValue.MinValue(), Math.min(IntValue, AnnotationValue.MaxValue())));
     }
 }

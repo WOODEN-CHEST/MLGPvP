@@ -187,6 +187,11 @@ public class GamePlayerEntity extends GameEntity implements IAudienceMember
         return _eventHandler.GetHitByArrowEvent();
     }
 
+    public PCPluginEvent<GamePlayerBlockPlaceEvent> GetBlockPlaceEvent()
+    {
+        return _eventHandler.GetBlockPlaceEvent();
+    }
+
 
     // Inherited methods.
     @Override

@@ -26,6 +26,7 @@ public class DefaultConfigProvider
         _configs.put("Casual", GetCasualConfig());
         _configs.put("Hardcore", GetHardcoreConfig());
         _configs.put("NoDamage", GetNoDamageConfig());
+        _configs.put("Default", new GameInstanceValues());
     }
 
     private GameInstanceValues GetChaosConfig()
@@ -63,9 +64,9 @@ public class DefaultConfigProvider
     {
         GameInstanceValues Config = new GameInstanceValues();
 
-        Config.ArrowCount = 16;
+        Config.ArrowCount = 8;
         Config.FeatherFallingLevel = 0;
-        Config.GoldenAppleCount = 8;
+        Config.GoldenAppleCount = 2;
         Config.TotemCount = 0;
 
         return Config;

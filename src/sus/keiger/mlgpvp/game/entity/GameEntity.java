@@ -1,6 +1,7 @@
 package sus.keiger.mlgpvp.game.entity;
 
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -144,6 +145,11 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
         return _wrappedEntity.isInWater();
     }
 
+    public boolean GetIsInPowderedSnow()
+    {
+        return _wrappedEntity.isInPowderedSnow();
+    }
+
     public PCPluginEvent<GameEntityLandOnGroundEvent> GetLandOnGroundEvent()
     {
         return  _groundRelativityController.GetLandEvent();
@@ -182,5 +188,10 @@ public abstract class GameEntity implements ITickable, IMLGPvPEventListener
     public void UnsubscribeFromEvents(IEventDispatcher dispatcher)
     {
         _components.forEach(component -> component.UnsubscribeFromEvents(dispatcher));
+    }
+
+    public World GetWorld()
+    {
+        return _wrappedEntity.getWorld();
     }
 }

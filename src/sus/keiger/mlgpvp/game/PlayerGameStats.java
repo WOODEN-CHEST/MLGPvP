@@ -10,8 +10,8 @@ public class PlayerGameStats
     private long _directHits = 0L;
     private double _damageTaken = 0d;
     private double _damageDealt = 0d;
-    private long _waterBucketsLanded = 0;
-    private long _waterBucketsFailed = 0;
+    private long _mlgsLanded = 0;
+    private long _mlgsFailed = 0;
 
 
     // Methods.
@@ -79,24 +79,24 @@ public class PlayerGameStats
         return _damageDealt;
     }
 
-    public void SetWaterBucketsFailed(long value)
+    public void SetMLGSFailed(long value)
     {
-        _waterBucketsFailed = Math.max(0L, value);
+        _mlgsFailed = Math.max(0L, value);
     }
 
-    public long GetWaterBucketsFailed()
+    public long GetMLGSFailed()
     {
-        return _waterBucketsFailed;
+        return _mlgsFailed;
     }
 
-    public void SetWaterBucketsLanded(long value)
+    public void SetMLGSLanded(long value)
     {
-        _waterBucketsLanded = Math.max(0L, value);
+        _mlgsLanded = Math.max(0L, value);
     }
 
-    public long GetWaterBucketsLanded()
+    public long GetMLGSLanded()
     {
-        return _waterBucketsLanded;
+        return _mlgsLanded;
     }
 
     public void SetHighestClimb(double value)

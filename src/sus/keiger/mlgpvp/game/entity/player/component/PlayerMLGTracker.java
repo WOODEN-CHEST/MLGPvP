@@ -17,16 +17,16 @@ import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.event.GameEntityLandOnGroundEvent;
 import sus.keiger.mlgpvp.game.entity.event.GameEntityLiftFromGroundEvent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerClimbEndEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerEmptyBucketEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerFailMLGEvent;
-import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerLandMLGEvent;
+import sus.keiger.mlgpvp.game.entity.player.event.*;
 import sus.keiger.plugincommon.PCMath;
 import sus.keiger.plugincommon.PCPluginEvent;
 import sus.keiger.plugincommon.player.actionbar.ActionbarMessage;
 
 import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
 {
@@ -42,6 +42,17 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
     private static final int CLIMB_START_GRACE_DURATION_TICKS = PCMath.SecondsToTicks(0.15d);
 
     private static final int ACTIONBAR_DURATION_TICKS = PCMath.SecondsToTicks(3d);
+
+    private static final Set<Material> MLG_MATERIALS = Set.of(
+            Material.WATER,
+            Material.POWDER_SNOW,
+            Material.SCAFFOLDING,
+            Material.SWEET_BERRY_BUSH,
+            Material.LADDER,
+            Material.VINE,
+            Material.TWISTING_VINES,
+            Material.COBWEB
+    );
 
 
     // Private fields.
@@ -85,6 +96,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         }
 
         _currentClimb = new MLGPvPClimb(GetEntity().GetLocation().getY(), CLIMB_START_GRACE_DURATION_TICKS);
+        _climbBossBar.removeViewer(GetEntity().GetPlayerEntity()); // For some reason, sometimes the bossbar duplicates.
         _climbBossBar.addViewer(GetEntity().GetPlayerEntity());
         UpdateBossBar();
     }
@@ -166,10 +178,80 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
 
     private void TickFall()
     {
-        if (!_isOnGround && GetEntity().GetIsInWater())
+        if (!_isOnGround && IsInsideMLGBlock())
         {
             EndFall(GetEntity().GetLocation());
         }
+    }
+
+    private boolean IsInsideMLGBlock()
+    {
+        BoundingBox PlayerBounds = GetEntity().GetBounds();
+
+        int MinX = (int)Math.floor(PlayerBounds.getMinX());
+        int MinY = (int)Math.floor(PlayerBounds.getMinY());
+        int MinZ = (int)Math.floor(PlayerBounds.getMinZ());
+        int MaxX = (int)Math.floor(PlayerBounds.getMaxX());
+        int MaxY = (int)Math.floor(PlayerBounds.getMaxY());
+        int MaxZ = (int)Math.floor(PlayerBounds.getMaxZ());
+
+
+        for (int x = MinX; x <= MaxX; x++)
+        {
+            for (int y = MinY; y <= MaxY; y++)
+            {
+                for (int z = MinZ; z <= MaxZ; z++)
+                {
+                    Block TargetBlock = GetEntity().GetWorld().getBlockAt(x, y, z);
+                    if (MLG_MATERIALS.contains(TargetBlock.getType())
+                            && IsTouchingBlockBounds(TargetBlock, PlayerBounds))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean IsTouchingBlockBounds(Block block, BoundingBox playerBounds)
+    {
+        final double MARGIN_OF_ERROR = 0.00025d;
+        for (BoundingBox BlockBound : GetBlockBounds(block))
+        {
+            if (PCMath.AreBoundsColliding(playerBounds, BlockBound, MARGIN_OF_ERROR))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Collection<BoundingBox> GetBlockBounds(Block block)
+    {
+        Collection<BoundingBox> Bounds = List.copyOf(block.getCollisionShape().getBoundingBoxes());
+        if (Bounds.isEmpty())
+        {
+            return GetFallbackBlockBounds(block);
+        }
+
+        for (BoundingBox TargetBound : Bounds)
+        {
+            TargetBound.shift(block.getLocation().toVector());
+        }
+
+        return Bounds;
+    }
+
+    private Collection<BoundingBox> GetFallbackBlockBounds(Block block)
+    {
+        Location BlockLocation = block.getLocation();
+        return List.of(new BoundingBox(BlockLocation.getBlockX(),
+                BlockLocation.getBlockY(),
+                BlockLocation.getBlockZ(),
+                BlockLocation.getBlockX() + 1d,
+                BlockLocation.getBlockY() + 1d,
+                BlockLocation.getBlockZ() + 1d));
     }
 
     private void MarkClimbEnd()
@@ -195,7 +277,8 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
     private void UpdateBossBar()
     {
         _climbBossBar.progress(GetClimbFactor());
-        _climbBossBar.name(Component.text("Climb Height: %s blocks".formatted(_blockHeightFormat.format(GetClimbedHeight()))));
+        _climbBossBar.name(Component.text("Climb Height: %s blocks".formatted(
+                _blockHeightFormat.format(GetClimbedHeight()))));
     }
 
     private boolean IsClimbingFromExplosion()
@@ -212,7 +295,15 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
     {
         if (IsFallingFromExplosion())
         {
-            _currentFall.PlacedWaterBlock = event.GetBlock();
+            _currentFall.PlacedMLGBlock = event.GetBlock();
+        }
+    }
+
+    private void OnBlockPlaceEvent(GamePlayerBlockPlaceEvent event)
+    {
+        if (IsFallingFromExplosion() && MLG_MATERIALS.contains(event.GetPlacedBlock().getType()))
+        {
+            _currentFall.PlacedMLGBlock = event.GetPlacedBlock();
         }
     }
 
@@ -248,27 +339,20 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
             return;
         }
 
-        if ((EndedFall.PlacedWaterBlock != null) && IsPlayerInSelfPlacedWaterBlock(EndedFall.PlacedWaterBlock))
+        boolean IsInMLGBLock = IsPlayerInSelfPlacedMLGBlock(EndedFall.PlacedMLGBlock);
+        if (IsInMLGBLock)
         {
-            OnSuccessfulMLGWaterBucket(FallDistance);
+            OnSuccessfulMLG(FallDistance);
         }
-        else if (!GetEntity().GetIsInWater())
+        else if (!IsInsideMLGBlock())
         {
-            OnFailedMLGWaterBucket(FallDistance);
+            OnFailedMLG(FallDistance);
         }
     }
 
-    private boolean IsPlayerInSelfPlacedWaterBlock(Block waterBlock)
+    private boolean IsPlayerInSelfPlacedMLGBlock(Block mlgBlock)
     {
-        Location BlockLocation = waterBlock.getLocation();
-        BoundingBox BlockBounds = new BoundingBox(BlockLocation.getBlockX(),
-                BlockLocation.getBlockY(),
-                BlockLocation.getBlockZ(),
-                BlockLocation.getBlockX() + 1d,
-                BlockLocation.getBlockY() + 1d,
-                BlockLocation.getBlockZ() + 1d);
-
-        return BlockBounds.overlaps(GetEntity().GetBounds());
+        return (mlgBlock != null) && IsTouchingBlockBounds(mlgBlock, GetEntity().GetBounds());
     }
 
     private void OnLiftFromGroundEvent(GameEntityLiftFromGroundEvent event)
@@ -276,7 +360,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         _isOnGround = false;
     }
 
-    private void OnSuccessfulMLGWaterBucket(double fallDistance)
+    private void OnSuccessfulMLG(double fallDistance)
     {
         GetEntity().ShowActionbar(new ActionbarMessage(ACTIONBAR_DURATION_TICKS,
                 Component.text("MLG of %sm landed".formatted(_blockHeightFormat.format(fallDistance)))
@@ -298,7 +382,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         _landMLGEvent.FireEvent(new GamePlayerLandMLGEvent(GetEntity(), fallDistance));
     }
 
-    private void OnFailedMLGWaterBucket(double fallDistance)
+    private void OnFailedMLG(double fallDistance)
     {
         GetEntity().ShowActionbar(new ActionbarMessage(ACTIONBAR_DURATION_TICKS,
                 Component.text("MLG failed").color(NamedTextColor.RED),
@@ -325,6 +409,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().GetEmptyBucketEvent().Subscribe(this, this::OnEmptyBucketEvent);
         GetEntity().GetLandOnGroundEvent().Subscribe(this, this::OnLandOnGroundEvent);
         GetEntity().GetLiftFromGroundEvent().Subscribe(this, this::OnLiftFromGroundEvent);
+        GetEntity().GetBlockPlaceEvent().Subscribe(this, this::OnBlockPlaceEvent);
     }
 
     @Override
@@ -335,6 +420,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
         GetEntity().GetEmptyBucketEvent().Unsubscribe(this);
         GetEntity().GetLandOnGroundEvent().Unsubscribe(this);
         GetEntity().GetLiftFromGroundEvent().Unsubscribe(this);
+        GetEntity().GetBlockPlaceEvent().Unsubscribe(this);
     }
 
 
@@ -360,7 +446,7 @@ public class PlayerMLGTracker extends GameEntityComponent<GamePlayerEntity>
     {
         // Fields.
         public final double StartYPosition;
-        public Block PlacedWaterBlock = null;
+        public Block PlacedMLGBlock = null;
 
 
         // Constructors.
