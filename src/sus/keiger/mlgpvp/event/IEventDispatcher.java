@@ -9,6 +9,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import sus.keiger.plugincommon.EmptyEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
 
+/**
+ * An event dispatcher propagates server events and allows other classes to sub to them individually.
+ */
 public interface IEventDispatcher extends Listener
 {
     PCPluginEvent<PlayerJoinEvent> GetJoinEvent();

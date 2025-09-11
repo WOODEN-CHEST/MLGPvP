@@ -10,12 +10,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+/**
+ * Config manager which stores game configs in JSON files on the server's file system.
+ */
 public class JSONConfigManager implements IConfigManager
 {
     // Private static fields.
@@ -128,6 +132,10 @@ public class JSONConfigManager implements IConfigManager
             }
 
             File TargetFile = TargetPath.toFile();
+            if (TargetFile.exists() && TargetFile.isFile())
+            {
+                Files.delete(TargetPath);
+            }
             try (FileOutputStream OutStream = new FileOutputStream(TargetFile))
             {
                 OutStream.write(_serializer.Serialize(config).getBytes(StandardCharsets.UTF_8));

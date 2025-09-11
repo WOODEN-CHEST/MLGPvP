@@ -12,7 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/* This kinda bad since it won't preserve the config if a field's name changes. */
+/* This is kinda bad since it won't preserve the config if a field's name changes. */
+
+
+/**
+ * Provides functionality to serialise game configs (stored in <code>GameInstanceValues</code> objects into JSON and
+ * deserialise them from JSON.
+ */
 public class JSONConfigSerializer
 {
     // Private fields.
@@ -30,7 +36,6 @@ public class JSONConfigSerializer
             _fieldMap.put(TargetField.getName(), TargetField);
         }
     }
-
 
 
     // Methods.

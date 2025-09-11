@@ -7,11 +7,19 @@ import sus.keiger.mlgpvp.game.IGameSessionExecutor;
 import sus.keiger.mlgpvp.service.IServerServices;
 import sus.keiger.plugincommon.command.ServerCommand;
 
-import java.nio.Buffer;
-
+/**
+ * Class to initialise all commands used by the MLGPvP plugin.
+ */
 public class CommandInitializer
 {
     // Methods.
+
+    /**
+     * Initialises MLGPvP's required commands.
+     * @param plugin The MLGPvP plugin, currently unused but may be used in the future.
+     * @param services The server's services.
+     * @param sessionExecutor The game session executor which the commands will act on.
+     */
     public void InitializeCommands(Plugin plugin, IServerServices services, IGameSessionExecutor sessionExecutor)
     {
         InitOneCommand(MLGPvPCommand.LABEL, MLGPvPCommand.CreteCommand(sessionExecutor, services));
