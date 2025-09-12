@@ -23,6 +23,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Default implementation of the MLGPvP minigame.
+ *
+ * <br>This game consists of components, where each component does a specific job.
+ * Components should be added in the constructor, not mid-game.
+ */
 public class MLGPvPGameInstance implements IGameInstanceExtended
 {
     // Private fields.

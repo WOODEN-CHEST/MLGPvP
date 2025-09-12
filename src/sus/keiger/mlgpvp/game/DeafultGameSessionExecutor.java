@@ -101,12 +101,6 @@ public class DeafultGameSessionExecutor implements IGameSessionExecutor
     }
 
     @Override
-    public PCPluginEvent<GameInstanceCompleteEvent> GetGameCompleteEvent()
-    {
-        return null;
-    }
-
-    @Override
     public void SubscribeToEvents(IEventDispatcher dispatcher) { }
 
     @Override

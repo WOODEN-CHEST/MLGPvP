@@ -3,6 +3,7 @@ package sus.keiger.mlgpvp.game.entity.player.component;
 import sus.keiger.mlgpvp.event.IEventDispatcher;
 import sus.keiger.mlgpvp.game.PlayerGameStats;
 import sus.keiger.mlgpvp.game.entity.GameEntity;
+import sus.keiger.mlgpvp.game.entity.arrow.GameArrowEntity;
 import sus.keiger.mlgpvp.game.entity.component.GameEntityComponent;
 import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.*;
@@ -41,13 +42,26 @@ public class PlayerStatTracker extends GameEntityComponent<GamePlayerEntity>
                 return;
             }
 
+            Optional<PlayerGameStats> AttackerStats;
+
             if (Source.get() instanceof GamePlayerEntity PlayerSource)
             {
-                GetStats(PlayerSource).ifPresent(attackerStats ->
-                {
-                    attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
-                });
+                AttackerStats = GetStats(PlayerSource);
+
             }
+            else if (Source.get() instanceof GameArrowEntity ArrowEntity)
+            {
+                AttackerStats = ArrowEntity.GetShooter().flatMap(this::GetStats);
+            }
+            else
+            {
+                AttackerStats = Optional.empty();
+            }
+
+            AttackerStats.ifPresent(attackerStats ->
+            {
+                attackerStats.SetDamageDealt(attackerStats.GetDamageDealt() + event.GetAmount());
+            });
         });
     }
 

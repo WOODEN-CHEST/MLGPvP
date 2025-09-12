@@ -47,7 +47,7 @@ public class ArrowBukkitEventHandler extends GameEntityComponent<GameArrowEntity
         _explosionCreator.CreateExplosion(ExplosionCreateOptions.CreateFromValues(
                 GetEntity().GetLocation(),
                 GetEntity().GetExplosionStrengthScale(),
-                GetEntity().GetShooter().orElse(null),
+                GetEntity(),
                 GetConfigValues()));
 
         Optional.ofNullable(GetGameInstance().GetEntity(event.getHitEntity()))

@@ -21,6 +21,7 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
     private boolean _isAlive = true;
     private double _savedAttributeMaxHealth;
+    private boolean _wasHealthReset = false;
 
 
     // Constructors.
@@ -103,7 +104,6 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
 
     // Inherited methods.
-
     @Override
     public void SubscribeToEvents(IEventDispatcher dispatcher)
     {
@@ -127,9 +127,20 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
         GetEntity().GetAttributeInstance(Attribute.MAX_HEALTH).ifPresent(instance ->
         {
-            _savedAttributeMaxHealth = instance.getBaseValue();
+            if (!_wasHealthReset)
+            {
+                _savedAttributeMaxHealth = instance.getBaseValue();
+            }
             instance.setBaseValue(GetConfigValues().PlayerMaxHealth);
         });
+
+        if (!_wasHealthReset)
+        {
+            SetIsAlive(true);
+            ResetHealth();
+            _wasHealthReset = true;
+        }
+
         GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
     }
 
@@ -137,20 +148,8 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
     public void RemoveCleanup()
     {
         super.RemoveCleanup();
-
-        GetEntity().GetAttributeInstance(Attribute.MAX_HEALTH).ifPresent(instance ->
-        {
-            instance.setBaseValue(_savedAttributeMaxHealth);
-        });
         GetEntity().SetIsGlowing(false);
-    }
-
-    @Override
-    public void Initialize()
-    {
-        super.Initialize();
-
-        SetIsAlive(true);
-        ResetHealth();
+        GetEntity().GetAttributeInstance(Attribute.MAX_HEALTH).ifPresent(instance ->
+                instance.setBaseValue(_savedAttributeMaxHealth));
     }
 }

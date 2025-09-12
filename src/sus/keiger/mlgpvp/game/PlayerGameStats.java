@@ -1,5 +1,10 @@
 package sus.keiger.mlgpvp.game;
 
+/**
+ * Holds information about a player's statistics during 1 match of MLGPvP.
+ * <br>This class does not associate the stats with an {@link sus.keiger.mlgpvp.player.IServerPlayer}
+ * instance by itself, that has to be done outside this class.
+ */
 public class PlayerGameStats
 {
     // Private fields.

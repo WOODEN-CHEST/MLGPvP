@@ -205,7 +205,7 @@ public class CustomExplosionCreator implements IExplosionCreator
         double FinalKnockbackStrength = options.GetKnockbackScale() * options.GetStrengthScale();
 
         DestroyBlocks(TargetLocation, FinalBlockStrength);
-        DealDamage(TargetLocation, FinalDamageStrength, options.GetSourcePlayer());
+        DealDamage(TargetLocation, FinalDamageStrength, options.GetSourceEntity().orElse(null));
         DealKnockback(TargetLocation, FinalKnockbackStrength);
         CreateExplosionContent(TargetLocation, FinalBlockStrength);
     }

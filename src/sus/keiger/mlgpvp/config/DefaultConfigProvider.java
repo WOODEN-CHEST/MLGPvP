@@ -4,6 +4,9 @@ import sus.keiger.mlgpvp.game.GameInstanceValues;
 
 import java.util.*;
 
+/**
+ * Provides the plugin's built-in game configurations.
+ */
 public class DefaultConfigProvider
 {
     // Private fields.
@@ -111,12 +114,21 @@ public class DefaultConfigProvider
     }
 
 
+    /**
+     * Gets a config by its name, no restrictions exist on the name.
+     * @param name The name of the config.
+     * @return The config if one exists, or emtpy if no such config exists.
+     */
     // Methods.
     public Optional<GameInstanceValues> GetConfig(String name)
     {
         return Optional.ofNullable(_configs.get(Objects.requireNonNull(name, "name is null")));
     }
 
+    /**
+     * Gets a list the names of all configs stored in this config provider.
+     * @return Immutable list copy of all config names.
+     */
     public List<String> GetConfigs()
     {
         return List.copyOf(_configs.keySet());
