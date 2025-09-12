@@ -156,9 +156,6 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
     }
 
 
-
-
-
     // Inherited methods.
     @Override
     public void SubscribeToEvents(IEventDispatcher dispatcher)
@@ -170,6 +167,7 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         dispatcher.GetEntityDamageEvent().Subscribe(this, this::OnEntityDamageEvent);
         dispatcher.GetItemConsumeEvent().Subscribe(this, this::OnItemConsumeEvent);
         dispatcher.GetLaunchProjectileEvent().Subscribe(this, this::OnLaunchProjectileEvent);
+        dispatcher.GetBlockPlaceEvent().Subscribe(this, this::OnBlockPlaceEvent);
     }
 
     @Override
@@ -182,5 +180,6 @@ public class PlayerBukkitEventHandler extends GameEntityComponent<GamePlayerEnti
         dispatcher.GetEntityDamageEvent().Unsubscribe(this);
         dispatcher.GetItemConsumeEvent().Unsubscribe(this);
         dispatcher.GetLaunchProjectileEvent().Unsubscribe(this);
+        dispatcher.GetBlockPlaceEvent().Unsubscribe(this);
     }
 }

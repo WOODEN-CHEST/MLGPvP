@@ -11,13 +11,16 @@ import sus.keiger.mlgpvp.game.entity.player.GamePlayerEntity;
 import sus.keiger.mlgpvp.game.entity.player.event.GamePlayerDamageEvent;
 import sus.keiger.mlgpvp.game.entity.player.event.PlayerLifeChangeEvent;
 import sus.keiger.plugincommon.PCPluginEvent;
+import sus.keiger.plugincommon.entity.EntityFunctions;
 
 public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 {
     // Private fields.
-    private boolean _isAlive = true;
     private final PCPluginEvent<PlayerLifeChangeEvent> _lifeChangeEvent = new PCPluginEvent<>();
     private final PCPluginEvent<GamePlayerDamageEvent> _damageEvent = new PCPluginEvent<>();
+
+    private boolean _isAlive = true;
+    private double _savedAttributeMaxHealth;
 
 
     // Constructors.
@@ -77,6 +80,7 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
     {
         DamageIfAlive(amount, source);
     }
+
     public void Spawn()
     {
         SetIsAlive(true);
@@ -84,11 +88,7 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
 
     public void ResetHealth()
     {
-        AttributeInstance Health = GetEntity().GetPlayerEntity().getAttribute(Attribute.MAX_HEALTH);
-        if (Health != null)
-        {
-            GetEntity().GetPlayerEntity().setHealth(Health.getValue());
-        }
+        EntityFunctions.SetHealthPortion(GetEntity().GetPlayerEntity(), 1f);
     }
 
     public PCPluginEvent<PlayerLifeChangeEvent> GetLifeChangeEvent()
@@ -118,5 +118,39 @@ public class PlayerLifeTracker extends GameEntityComponent<GamePlayerEntity>
         super.UnsubscribeFromEvents(dispatcher);
 
         dispatcher.GetEntityDeathEvent().Unsubscribe(this);
+    }
+
+    @Override
+    public void AddPrepare()
+    {
+        super.AddPrepare();
+
+        GetEntity().GetAttributeInstance(Attribute.MAX_HEALTH).ifPresent(instance ->
+        {
+            _savedAttributeMaxHealth = instance.getBaseValue();
+            instance.setBaseValue(GetConfigValues().PlayerMaxHealth);
+        });
+        GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
+    }
+
+    @Override
+    public void RemoveCleanup()
+    {
+        super.RemoveCleanup();
+
+        GetEntity().GetAttributeInstance(Attribute.MAX_HEALTH).ifPresent(instance ->
+        {
+            instance.setBaseValue(_savedAttributeMaxHealth);
+        });
+        GetEntity().SetIsGlowing(false);
+    }
+
+    @Override
+    public void Initialize()
+    {
+        super.Initialize();
+
+        SetIsAlive(true);
+        ResetHealth();
     }
 }

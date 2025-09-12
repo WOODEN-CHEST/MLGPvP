@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -32,6 +33,11 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
     private static final boolean DOES_BOW_USE_ARROWS = false;
     private static final boolean DOES_CROSSBOW_USE_ARROWS = true;
 
+
+    // Private fields.
+    private double _savedAttributeBlockReach;
+    private double _savedAttributeGravity;
+    private double _savedJumpStrength;
 
 
     // Constructors.
@@ -122,11 +128,6 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         }
     }
 
-    private int GetCount(boolean isEnabled)
-    {
-        return isEnabled ? 1 : 0;
-    }
-
     private ItemStack CreateUnbreakableTool(Material material)
     {
         ItemStack Item = ItemStack.of(material);
@@ -139,7 +140,11 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         ItemStack Item = CreateUnbreakableTool(material);
         Item.editMeta(meta ->
         {
-            meta.addEnchant(Enchantment.PROTECTION, GetConfigValues().ArmorProtectionLevel, true);
+            if (GetConfigValues().ArmorProtectionLevel > 0)
+            {
+                meta.addEnchant(Enchantment.PROTECTION, GetConfigValues().ArmorProtectionLevel, true);
+            }
+
             if (Enchantment.FEATHER_FALLING.canEnchantItem(Item) && (GetConfigValues().FeatherFallingLevel > 0))
             {
                 meta.addEnchant(Enchantment.FEATHER_FALLING, GetConfigValues().FeatherFallingLevel, true);
@@ -216,8 +221,6 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         GetEntity().ClearPotionEffects();
         GetEntity().SetIsGlowing(true);
         GetEntity().SetGameMode(GameMode.SURVIVAL);
-        GetEntity().SetIsAlive(true);
-        GetEntity().ResetHealth();
     }
 
     private void InitDeadProperties()
@@ -225,6 +228,36 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
         GetEntity().SetGameMode(GameMode.SPECTATOR);
         GetEntity().ClearPotionEffects();
         GetEntity().SetIsGlowing(false);
+    }
+
+    private void InitAttributes()
+    {
+        GetEntity().GetAttributeInstance(Attribute.BLOCK_INTERACTION_RANGE).ifPresent(instance ->
+                instance.setBaseValue(GetConfigValues().PlayerBlockReach));
+        GetEntity().GetAttributeInstance(Attribute.GRAVITY).ifPresent(instance ->
+                instance.setBaseValue(GetConfigValues().PlayerGravity));
+        GetEntity().GetAttributeInstance(Attribute.JUMP_STRENGTH).ifPresent(instance ->
+                instance.setBaseValue(GetConfigValues().PlayerJumpStrength));
+    }
+
+    private void SaveAttributes()
+    {
+        GetEntity().GetAttributeInstance(Attribute.BLOCK_INTERACTION_RANGE).ifPresent(instance ->
+                _savedAttributeBlockReach = instance.getBaseValue());
+        GetEntity().GetAttributeInstance(Attribute.GRAVITY).ifPresent(instance ->
+                _savedAttributeGravity = instance.getBaseValue());
+        GetEntity().GetAttributeInstance(Attribute.JUMP_STRENGTH).ifPresent(instance ->
+                _savedJumpStrength = instance.getBaseValue());
+    }
+
+    private void LoadAttributes()
+    {
+        GetEntity().GetAttributeInstance(Attribute.BLOCK_INTERACTION_RANGE).ifPresent(instance ->
+                instance.setBaseValue(_savedAttributeBlockReach));
+        GetEntity().GetAttributeInstance(Attribute.GRAVITY).ifPresent(instance ->
+                instance.setBaseValue(_savedAttributeGravity));
+        GetEntity().GetAttributeInstance(Attribute.JUMP_STRENGTH).ifPresent(instance ->
+                instance.setBaseValue(_savedJumpStrength));
     }
 
 
@@ -256,13 +289,14 @@ public class PlayerStateInitializer extends GameEntityComponent<GamePlayerEntity
     public void AddPrepare()
     {
         super.AddPrepare();
-        GetEntity().SetIsGlowing(GetEntity().GetIsAlive());
+        SaveAttributes();
+        InitAttributes();
     }
 
     @Override
     public void RemoveCleanup()
     {
         super.RemoveCleanup();
-        GetEntity().SetIsGlowing(false);
+        LoadAttributes();
     }
 }

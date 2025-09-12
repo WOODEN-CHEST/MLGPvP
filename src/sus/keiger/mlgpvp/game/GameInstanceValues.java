@@ -173,6 +173,23 @@ public class GameInstanceValues
     public boolean IsClimbHeightReset = true;
 
 
+    /* Attributes. */
+    @GameDoubleField(Description = "The player's max health, in half-hearts.",
+            MinValue = 1d, MaxValue = 100d)
+    public double PlayerMaxHealth = 20d;
+
+    @GameDoubleField(Description = "The player's block interaction range, in blocks.",
+            MinValue = 1d, MaxValue = 100d)
+    public double PlayerBlockReach = 4.5;
+
+    @GameDoubleField(Description = "The player's gravity acceleration in blocks per tick " +
+            "(blocks per 1/20th of a second).", MinValue = -1, MaxValue = 1d)
+    public double PlayerGravity = 0.08;
+
+    @GameDoubleField(Description = "The jump strength, larger value = higher jump.", MinValue = 0, MaxValue = 10d)
+    public double PlayerJumpStrength = 0.42;
+
+
     /* Damage. */
     @GameBoolField(Description = "Whether melee attacks deal damage.")
     public boolean IsMeleeDamageEnabled = true;
