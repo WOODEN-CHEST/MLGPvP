@@ -415,7 +415,7 @@ public class MLGPvPCommand
     {
         Object Value = data.GetParsedData(KEY_VALUE);
         _gameSessionExecutor.GetGlobalGameValues().SetField(field, Value);
-        data.SetFeedback("Set field \"%s\" to \"%s\""
-                .formatted(field.getName(), Value.toString()));
+        data.SetFeedback("Set field \"%s\" to \"%s\"".formatted(field.getName(),
+                _gameSessionExecutor.GetGlobalGameValues().GetProperties(field).Value()));
     }
 }
