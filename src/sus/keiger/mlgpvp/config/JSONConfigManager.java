@@ -79,6 +79,23 @@ public class JSONConfigManager implements IConfigManager
         }
     }
 
+    private Stream<String> GetConfigsFromDirectory()
+    {
+        File[] Files = GetConfigDirectoryPath().toFile().listFiles();
+        if (Files == null)
+        {
+            return Stream.empty();
+        }
+
+        return Arrays.stream(Files)
+                .map(file ->
+                {
+                    String FileName = file.getName();
+                    int LastSeparatorIndex = FileName.lastIndexOf(EXTENSION_INDICATOR);
+                    return LastSeparatorIndex == -1 ? FileName : FileName.substring(0, LastSeparatorIndex);
+                });
+    }
+
 
     // Inherited methods.
     @Override
@@ -232,17 +249,8 @@ public class JSONConfigManager implements IConfigManager
     {
         try
         {
-            return Optional.ofNullable(GetConfigDirectoryPath().toFile().listFiles())
-                    .map(files -> Stream.concat(Arrays.stream(files)
-                            .map(file ->
-                            {
-                                String FileName = file.getName();
-                                int LastSeparatorIndex = FileName.lastIndexOf(EXTENSION_INDICATOR);
-                                return LastSeparatorIndex == -1 ? FileName : FileName.substring(0, LastSeparatorIndex);
-                            })
-                            .filter(name -> VerifyConfigName(name).IsSuccessful()),
-                            _defaultConfigs.GetConfigs().stream()).toList())
-                    .orElse(Collections.emptyList());
+            return Stream.concat(_defaultConfigs.GetConfigs().stream(), GetConfigsFromDirectory()).toList();
+
         }
         catch (SecurityException e)
         {
