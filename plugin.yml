@@ -1,7 +1,7 @@
 main: sus.keiger.mlgpvp.MLGPvPPlugin
 name: MLGPvP
-api-version: 1.21
-version: 1.0.0
+api-version: 26.1
+version: 1.0.1
 
 commands:
   mlgpvp:

@@ -57,8 +57,7 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
     private void OnBorderShrinkBeginEvent(TickClock clock)
     {
         WorldBorder Border = GetGameInstance().GetCenterLocation().getWorld().getWorldBorder();
-        Border.setSize(GetValues().BorderDiameterMin, Math.round(PCMath.TicksToSeconds(
-                GetGameInstance().GetTicksRemainingUntilDeathmatch())));
+        Border.changeSize(GetValues().BorderDiameterMin, GetGameInstance().GetTicksRemainingUntilDeathmatch());
         _beginShrinkEvent.FireEvent(new GameBorderBeginShrinkEvent(GetGameInstance()));
         GetGameInstance().SendMessage(Component.text("The border is now shrinking!").color(NamedTextColor.RED));
     }
@@ -75,7 +74,7 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
         _restoredBorderSize = Border.getSize();
 
         Border.setCenter(CenterLocation);
-        Border.setSize(GetValues().BorderDiameterMax, 0L);
+        Border.changeSize(GetValues().BorderDiameterMax, 0L);
         Border.setDamageAmount(DAMAGE_AMOUNT);
         Border.setDamageBuffer(DAMAGE_BUFFER);
 
@@ -89,7 +88,7 @@ public class GameBorderManager extends GameComponent<MLGPvPGameInstance>
         WorldBorder Border = TargetWorld.getWorldBorder();
 
         Border.setCenter(_restoredBorderCenter);
-        Border.setSize(_restoredBorderSize, 0L);
+        Border.changeSize(_restoredBorderSize, 0L);
         Border.setDamageAmount(_restoredBorderDamageAmount);
         Border.setDamageBuffer(_restoredBorderBufferAmount);
     }

@@ -58,32 +58,31 @@ public class GameWorldStateEnsurer extends GameComponent<MLGPvPGameInstance>
 
     private void SaveGameRules(World world)
     {
-        _savedRuleLocatorBar = Optional.ofNullable(world.getGameRuleValue(GameRule.LOCATOR_BAR)).orElse(false);
-        _savedRuleAnnounceAdvancements = Optional.ofNullable(
-                world.getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS)).orElse(false);
-        _savedRuleImmediateRespawn = Optional.ofNullable(
-                world.getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN)).orElse(false);
+        _savedRuleLocatorBar = Optional.of(world.getGameRuleValue(GameRules.LOCATOR_BAR)).orElse(false);
+        _savedRuleAnnounceAdvancements = Optional.of(
+                world.getGameRuleValue(GameRules.SHOW_ADVANCEMENT_MESSAGES)).orElse(false);
+        _savedRuleImmediateRespawn = Optional.of(
+                world.getGameRuleValue(GameRules.IMMEDIATE_RESPAWN)).orElse(false);
     }
 
     private void LoadGameRules(World world)
     {
-        world.setGameRule(GameRule.LOCATOR_BAR, _savedRuleLocatorBar);
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, _savedRuleAnnounceAdvancements);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, _savedRuleImmediateRespawn);
+        world.setGameRule(GameRules.LOCATOR_BAR, _savedRuleLocatorBar);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, _savedRuleAnnounceAdvancements);
+        world.setGameRule(GameRules.IMMEDIATE_RESPAWN, _savedRuleImmediateRespawn);
     }
 
     private void InitGameRules(World world)
     {
         SaveGameRules(world);
 
-        world.setGameRule(GameRule.LOCATOR_BAR, false);
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
+        world.setGameRule(GameRules.LOCATOR_BAR, false);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+        world.setGameRule(GameRules.IMMEDIATE_RESPAWN, false);
     }
 
 
     // Inherited methods.
-
     @Override
     public void SubscribeToEvents(IEventDispatcher dispatcher)
     {

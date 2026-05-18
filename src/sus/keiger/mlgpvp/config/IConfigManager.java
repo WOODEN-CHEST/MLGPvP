@@ -59,7 +59,7 @@ public interface IConfigManager
      * @return Success if the config was deleted, failure with an explanation if a non-fatal error occurred while
      * deleting the config. Non-fatal errors include a built-in config with the same name existing, as built-in
      * configs cannot be deleted.
-     * @throws ConfigException If the name is invalid or an exception occurred deleting the config.
+     * @throws ConfigException If the name is invalid or an exception occurred while deleting the config.
      */
     ExplainedResult DeleteConfig(String name) throws ConfigException;
 
